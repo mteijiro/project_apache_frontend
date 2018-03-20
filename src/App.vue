@@ -1,5 +1,8 @@
 <template>
   <div id="app">
+    <router-link to="SubmitAComplaint">Submit A Complaint</router-link>
+    <router-link to="About">About</router-link>
+    <br />
     <img src="./assets/titleImageSmall.png">
     <h1>Noise Complaint App</h1>
     <router-view/>
