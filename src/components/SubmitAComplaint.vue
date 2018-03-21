@@ -1,11 +1,13 @@
 <template>
     <div class="greetings">
         <h2>Submit A Complaint</h2>
-        <form v-on:submit="submitComplaint">
+        <form v-on:submit="submitComplaint(myCredentials, newComplaint)">
             <div>Username:</div>
             <input type="text" v-model="myCredentials.username" value="username">
             <div>Password:</div>
             <input type="text" v-model="myCredentials.password" value="password">
+            <div>Comments:</div>
+            <input type="text" v-model="newComplaint.comments" value="password">
             <div>Severity: {{ newComplaint.severity }}</div><select v-model="newComplaint.severity">
                 <option disabled value="">Select Severity</option>
                 <option>1</option>
@@ -51,7 +53,7 @@
                 <!--</div>-->
             <!--</form>-->
             <br />
-            <button v-on:click="submitComplaint(myCredentials, newComplaint)">Submit</button>
+            <button>Submit</button>
         </form>
     </div>
 </template>
@@ -85,6 +87,10 @@ export default {
     longitude: {
       type: String,
       default: '0.0'
+    },
+    comments: {
+      type: String,
+      default: 'no comments'
     }
   },
   data () {
@@ -113,45 +119,21 @@ export default {
   // },
   methods: {
     submitComplaint: function (myCredentials, newComplaint) {
-      // var form = new FormData()
-      // form.append('username', 'mteijiro')
-      // form.append('password', 'Temp12345')
-      //
-      // var settings = {
-      //   'async': true,
-      //   'crossDomain': true,
-      //   'url': 'http://localhost:8000/get-token/',
-      //   'method': 'POST',
-      //   'headers': {
-      //     'Content-Type': 'application/x-www-form-urlencoded',
-      //     'Cache-Control': 'no-cache',
-      //     // 'Postman-Token': '5fc7bca7-1fa3-441e-b075-1fefd0557758'
-      //   },
-      //   'processData': false,
-      //   'contentType': false,
-      //   'mimeType': 'multipart/form-data',
-      //   'data': form
-      // }
-      //
-      // axios.post(settings).done(function (response) {
-      //   console.log(response)
-      // })
-
-      const sendingIt = new FormData()
-      sendingIt.append('username', 'mteijiro')
-      sendingIt.append('password', 'Temp12345')
-      const sendingIt2 = new FormData()
-      sendingIt2.append('severity', '2')
-      sendingIt2.append('category', 'street noise')
-      sendingIt2.append('latitude', '23.012')
-      sendingIt2.append('longitude', '32.239')
-      sendingIt2.append('comments', 'lol why tf does this work now!??!?.exe2.png.lol.avi.meme')
+      const credentialsForm = new FormData()
+      credentialsForm.append('username', myCredentials.username)
+      credentialsForm.append('password', myCredentials.password)
+      const complaintForm = new FormData()
+      complaintForm.append('severity', newComplaint.severity)
+      complaintForm.append('category', newComplaint.category)
+      complaintForm.append('latitude', String(newComplaint.latitude))
+      complaintForm.append('longitude', String(newComplaint.longitude))
+      complaintForm.append('comments', newComplaint.comments)
       fetch('http://localhost:8000/get-token/', {
         // credentials: 'include',
         // cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
         // credentials: 'same-origin', // include, same-origin, *omit
         mode: 'cors',
-        body: sendingIt,
+        body: credentialsForm,
         method: 'POST'
       }).then(response => response.json())
         .then(JSONresponse => JSON.stringify(JSONresponse.token))
@@ -163,7 +145,7 @@ export default {
             headers: {
               'Authorization': resp4
             },
-            body: sendingIt2,
+            body: complaintForm,
             method: 'POST'
           })
             .then((resp) => {
