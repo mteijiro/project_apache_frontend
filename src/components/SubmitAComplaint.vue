@@ -8,25 +8,17 @@
             <input type="text" v-model="myCredentials.password" value="password">
             <div>Comments:</div>
             <input type="text" v-model="newComplaint.comments" value="password">
-            <div>Severity: {{ newComplaint.severity }}</div><select v-model="newComplaint.severity">
+            <div>Severity: {{ newComplaint.severity }}</div>
+            <select v-model="newComplaint.severity">
                 <option disabled value="">Select Severity</option>
-                <option>1</option>
-                <option>2</option>
-                <option>3</option>
-                <option>4</option>
-                <option>5</option>
-                <option>6</option>
-                <option>7</option>
-                <option>8</option>
-                <option>9</option>
-                <option>10</option>
+                <option v-for="severityRating in severityRatings" v-bind:key="severityRating.key">
+                    {{ severityRating.value }}</option>
             </select>
             <div>Category: {{ newComplaint.category }}</div>
             <select v-model="newComplaint.category">
                 <option disabled value="">Define Category</option>
-                <option>Street Noise</option>
-                <option>Automobile</option>
-                <option>Business Noise</option>
+                <option v-for="category in categories" v-bind:key="category.key">
+                    {{ category.value }}</option>
             </select>
             <br />
             <span>Location</span>
@@ -96,11 +88,15 @@ export default {
   data () {
     return {
       newComplaint: {},
-      myCredentials: {}
+      myCredentials: {},
       // uploadedFiles: [],
       // uploadError: null,
       // currentStatus: null,
       // uploadFieldName: 'photos'
+      categories: [{key: 1, value: 'Street Noise'}, {key: 2, value: 'Automobile'}, {key: 3, value: 'Business Noise'}],
+      severityRatings: [{key: 1, value: '1'}, {key: 2, value: '2'}, {key: 3, value: '3'}, {key: 4, value: '4'},
+        {key: 5, value: '5'}, {key: 6, value: '6'}, {key: 7, value: '7'}, {key: 8, value: '8'}, {key: 9, value: '9'},
+        {key: 10, value: '10'}]
     }
   },
   // computed: {
@@ -129,17 +125,14 @@ export default {
       complaintForm.append('longitude', String(newComplaint.longitude))
       complaintForm.append('comments', newComplaint.comments)
       fetch('http://localhost:8000/get-token/', {
-        // credentials: 'include',
-        // cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
-        // credentials: 'same-origin', // include, same-origin, *omit
         mode: 'cors',
         body: credentialsForm,
         method: 'POST'
-      }).then(response => response.json())
-        .then(JSONresponse => JSON.stringify(JSONresponse.token))
-        .then(resp3 => 'Token ' + JSON.parse(resp3))
+      }).then(response => response.json()) // Convert the token response into a JSON object
+        .then(JSONresponse => JSON.stringify(JSONresponse.token)) // Select the token string from the object.
+        .then(tokenString => 'Token ' + JSON.parse(tokenString)) // Remove string quotations and concatenate with authorization syntax
         .then(resp4 => {
-          alert(resp4)
+          alert(resp4) // (For debugging purposes) print out the token.
           fetch('http://localhost:8000/complaints/', {
             mode: 'cors',
             headers: {
