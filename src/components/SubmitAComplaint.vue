@@ -124,6 +124,8 @@ export default {
       complaintForm.append('latitude', String(newComplaint.latitude))
       complaintForm.append('longitude', String(newComplaint.longitude))
       complaintForm.append('comments', newComplaint.comments)
+      // complaintForm.append('image', newComplaint.image)
+      // complaintForm.append('audio', newComplaint.audio)
       fetch('http://localhost:8000/get-token/', {
         mode: 'cors',
         body: credentialsForm,
