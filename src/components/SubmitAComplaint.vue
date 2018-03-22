@@ -2,56 +2,42 @@
     <div class="greetings">
         <h2>Submit A Complaint</h2>
         <form v-on:submit="submitComplaint(myCredentials, newComplaint)">
-            <div>Username:</div>
-            <input type="text" v-model="myCredentials.username" value="username">
-            <div>Password:</div>
-            <input type="text" v-model="myCredentials.password" value="password">
-            <div>Comments:</div>
-            <input type="text" v-model="newComplaint.comments" value="password">
-            <div>Severity: {{ newComplaint.severity }}</div>
-            <select v-model="newComplaint.severity">
-                <option disabled value="">Select Severity</option>
-                <option v-for="severityRating in severityRatings" v-bind:key="severityRating.key">
-                    {{ severityRating.value }}</option>
-            </select>
-            <div>Category: {{ newComplaint.category }}</div>
-            <select v-model="newComplaint.category">
-                <option disabled value="">Define Category</option>
-                <option v-for="category in categories" v-bind:key="category.key">
-                    {{ category.value }}</option>
-            </select>
-            <br />
-            <span>Location</span>
-            <input type="text" v-model="newComplaint.latitude" value="latitude">
-            <input type="text" v-model="newComplaint.longitude" value="longitude">
-            <br />
-            <br />
-            <!--&lt;!&ndash; Upload Images &ndash;&gt;-->
-            <!--<form enctype="multipart/form-data" novalidate v-if="isInitial || isSaving">-->
-                <!--<div class="dropbox">-->
-                  <!--<span>Image</span>-->
-                  <!--<input type="file" multiple :name="uploadFieldName" :disabled="isSaving" @change="filesChange($event.target.name, $event.target.files); fileCount = $event.target.files.length" accept="image/*" class="input-file">-->
-                  <!--&lt;!&ndash;<p v-if="isInitial"> Drag your file(s) here to begin<br> or click to browse </p>&ndash;&gt;-->
-                  <!--&lt;!&ndash;<p v-if="isSaving"> Uploading {{ fileCount }} files... </p>&ndash;&gt;-->
-                <!--</div>-->
-            <!--</form>-->
-            <!--&lt;!&ndash; Upload Audio &ndash;&gt;-->
-            <!--<form enctype="multipart/form-data" novalidate v-if="isInitial || isSaving">-->
-                <!--<div class="dropbox">-->
-                  <!--<span>Audio</span>-->
-                  <!--<input type="file" multiple :name="uploadFieldName" :disabled="isSaving" @change="filesChange($event.target.name, $event.target.files); fileCount = $event.target.files.length" accept="audio/*" class="input-file">-->
-                  <!--&lt;!&ndash;<p v-if="isInitial"> Drag your file(s) here to begin <br> or click to browse </p>&ndash;&gt;-->
-                  <!--&lt;!&ndash;<p v-if="isSaving"> Uploading {{ fileCount }} files... </p>&ndash;&gt;-->
-                <!--</div>-->
-            <!--</form>-->
-            <br />
-            <button>Submit</button>
+          <div>Username:</div>
+          <input type="text" v-model="myCredentials.username" value="username">
+          <div>Password:</div>
+          <input type="text" v-model="myCredentials.password" value="password">
+          <div>Comments:</div>
+          <input type="text" v-model="newComplaint.comments" value="password">
+          <div>Severity: {{ newComplaint.severity }}</div>
+          <select v-model="newComplaint.severity">
+            <option disabled value="">Select Severity</option>
+            <option v-for="severityRating in severityRatings" v-bind:key="severityRating.key">
+              {{ severityRating.value }}</option>
+          </select>
+          <div>Category: {{ newComplaint.category }}</div>
+          <select v-model="newComplaint.category">
+            <option disabled value="">Define Category</option>
+            <option v-for="category in categories" v-bind:key="category.key">
+              {{ category.value }}</option>
+          </select>
+          <br />
+          <span>Location</span>
+          <input type="text" v-model="newComplaint.latitude" value="latitude">
+          <input type="text" v-model="newComplaint.longitude" value="longitude">
+          <br />
+          <br />
+          <span>Image</span>
+          <input type="file" @change="onImageSelected" accept="image/*">
+          <br />
+          <span>Audio</span>
+          <input type="file" @change="onAudioSelected" accept="audio/*">
+          <br />
+          <button>Submit</button>
         </form>
     </div>
 </template>
 
 <script>
-// const STATUS_INITIAL = 0, STATUS_SAVING = 1, STATUS_SUCCESS = 2, STATUS_FAILED = 3
 
 export default {
   name: 'SubmitAComplaint',
@@ -89,31 +75,26 @@ export default {
     return {
       newComplaint: {},
       myCredentials: {},
-      // uploadedFiles: [],
-      // uploadError: null,
-      // currentStatus: null,
-      // uploadFieldName: 'photos'
+      imageUpload: null,
+      audioUpload: null,
       categories: [{key: 1, value: 'Street Noise'}, {key: 2, value: 'Automobile'}, {key: 3, value: 'Business Noise'}],
       severityRatings: [{key: 1, value: '1'}, {key: 2, value: '2'}, {key: 3, value: '3'}, {key: 4, value: '4'},
         {key: 5, value: '5'}, {key: 6, value: '6'}, {key: 7, value: '7'}, {key: 8, value: '8'}, {key: 9, value: '9'},
         {key: 10, value: '10'}]
     }
   },
-  // computed: {
-  //   isInitial () {
-  //     return this.currentStatus === STATUS_INITIAL
-  //   },
-  //   isSaving () {
-  //     return this.currentStatus === STATUS_SAVING
-  //   },
-  //   isSuccess () {
-  //     return this.currentStatus === STATUS_SUCCESS
-  //   },
-  //   isFailed () {
-  //     return this.currentStatus === STATUS_FAILED
-  //   }
-  // },
   methods: {
+
+    onImageSelected (event) {
+      console.log(event)
+      this.imageUpload = event.target.files[0]
+      this.newComplaint.imageUP = this.imageUpload
+    },
+    onAudioSelected (event) {
+      console.log(event)
+      this.audioUpload = event.target.files[0]
+      this.newComplaint.audioUP = this.audioUpload
+    },
     submitComplaint: function (myCredentials, newComplaint) {
       const credentialsForm = new FormData()
       credentialsForm.append('username', myCredentials.username)
@@ -124,8 +105,8 @@ export default {
       complaintForm.append('latitude', String(newComplaint.latitude))
       complaintForm.append('longitude', String(newComplaint.longitude))
       complaintForm.append('comments', newComplaint.comments)
-      // complaintForm.append('image', newComplaint.image)
-      // complaintForm.append('audio', newComplaint.audio)
+      complaintForm.append('image', newComplaint.imageUP, newComplaint.imageUP.name)
+      complaintForm.append('audio', newComplaint.audioUP, newComplaint.audioUP.name)
       fetch('http://localhost:8000/get-token/', {
         mode: 'cors',
         body: credentialsForm,
@@ -150,38 +131,6 @@ export default {
         }
         )
     }
-    // reset () {
-    //   // reset form to initial state
-    //   this.currentStatus = STATUS_INITIAL
-    //   this.uploadedFiles = []
-    //   this.uploadError = null
-    // },
-    // save (formData) {
-    //   // upload data to the server
-    //   this.currentStatus = STATUS_SAVING
-    //   upload(formData)
-    //     .then(x => {
-    //       this.uploadedFiles = [].concat(x)
-    //       this.currentStatus = STATUS_SUCCESS
-    //     })
-    //     .catch(err => {
-    //       this.uploadError = err.response
-    //       this.currentStatus = STATUS_FAILED
-    //     })
-    // },
-    // filesChange (fieldName, fileList) {
-    //   // handle file changes
-    //   const formData = new FormData()
-    //   if (!fileList.length) return
-    //   // append the files to FormData
-    //   Array
-    //     .from(Array(fileList.length).keys())
-    //     .map(x => {
-    //       formData.append(fieldName, fileList[x], fileList[x].name)
-    //     })
-    //   // save it
-    //   this.save(formData)
-    // }
   },
   // mounted () {
   //   this.reset()
