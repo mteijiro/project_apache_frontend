@@ -142,7 +142,7 @@ export default {
       if (newComplaint.audioUP != null) {
         complaintForm.append('audio', newComplaint.audioUP, newComplaint.audioUP.name)
       }
-      fetch('http://18.197.8.126:8000/get-token/', {
+      fetch('http://localhost:8000/get-token/', {
         mode: 'cors',
         body: credentialsForm,
         method: 'POST'
@@ -150,8 +150,8 @@ export default {
         .then(JSONresponse => JSON.stringify(JSONresponse.token)) // Select the token string from the object.
         .then(tokenString => 'Token ' + JSON.parse(tokenString)) // Remove string quotations and concatenate with authorization syntax
         .then(resp4 => {
-          alert(resp4) // (For debugging purposes) print out the token.
-          fetch('http://18.197.8.126:8000/complaints/', {
+          // alert(resp4) // (For debugging purposes) print out the token.
+          fetch('http://localhost:8000/complaints/', {
             mode: 'cors',
             headers: {
               'Authorization': resp4
