@@ -7,7 +7,7 @@
           <div>Password:</div>
           <input type="text" v-model="myCredentials.password" value="password">
           <div>Comments:</div>
-          <input type="text" v-model="newComplaint.comments" value="password">
+          <input type="text" v-model="newComplaint.comments" value="comments">
           <div>Severity: {{ newComplaint.severity }}</div>
           <select v-model="newComplaint.severity">
             <option disabled value="">Select Severity</option>
@@ -25,6 +25,8 @@
           <input type="text" v-model="newComplaint.latitude" value="latitude">
           <input type="text" v-model="newComplaint.longitude" value="longitude">
           <br />
+          <input type="button" v-on:click="getUserLocation(this)" value="location">
+          <p id="locationDisplay"></p>
           <br />
           <span>Image</span>
           <input type="file" @change="onImageSelected" accept="image/*">
@@ -41,7 +43,8 @@
 
 export default {
   name: 'SubmitAComplaint',
-  props: {
+  props:
+  {
     username: {
       type: String,
       default: 'mteijiro'
@@ -73,7 +76,17 @@ export default {
   },
   data () {
     return {
-      newComplaint: {},
+      newComplaint: {
+        username: 'invalid',
+        password: 'noPassword',
+        category: 'Street Noise',
+        severity: '1',
+        latitude: 0.0,
+        longitude: 0.0,
+        comments: '',
+        imageUP: null,
+        audioUP: null
+      },
       myCredentials: {},
       imageUpload: null,
       audioUpload: null,
@@ -84,7 +97,53 @@ export default {
     }
   },
   methods: {
+    getUserLocation (complaint) {
+      var me = this
+      function getLocation (callback) {
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(callback)
+        } else {
+          callback(null)
+        }
+      }
+      getLocation(function (pos) {
+        // do stuff
+        if (pos != null) {
+          me.newComplaint.latitude = pos.coords.latitude
+          me.newComplaint.longitude = pos.coords.longitude
+        }
+      })
+      // function success (pos) {
+      //   alert(console.log(this.newComplaint.latitude))
+      //   complaint.newComplaint.latitude = pos.coords.latitude
+      //   complaint.newComplaint.longitude = pos.coords.longitude
+      // }
+      // function fail () {
+      //   throw new Error('Unable to get your location.')
+      // }
+      // if (navigator.geolocation) {
+      //   navigator.geolocation.getCurrentPosition(success, fail)
+      // } else {
+      //   throw new Error('Your browser does not support geolocation.')
+      // }
 
+      // var x = document.getElementById('locationDisplay')
+      // function getLocation () {
+      //   if (navigator.geolocation) {
+      //     navigator.geolocation.getCurrentPosition(showPosition)
+      //   } else {
+      //     x.innerHTML = 'Geolocation is not supported by this browser.'
+      //   }
+      // }
+      // function showPosition (position) {
+      //   // newComplaint.latitude = position.coords.latitude
+      //   // newComplaint.longitude = position.coords.longitude
+      //   x.innerHTML = 'Latitude: ' + position.coords.latitude +
+      //     '<br>Longitude: ' + position.coords.longitude
+      // }
+      // alert(this.newComplaint)
+      // getLocation()
+    },
     onImageSelected (event) {
       console.log(event)
       this.imageUpload = event.target.files[0]
@@ -105,8 +164,12 @@ export default {
       complaintForm.append('latitude', String(newComplaint.latitude))
       complaintForm.append('longitude', String(newComplaint.longitude))
       complaintForm.append('comments', newComplaint.comments)
-      complaintForm.append('image', newComplaint.imageUP, newComplaint.imageUP.name)
-      complaintForm.append('audio', newComplaint.audioUP, newComplaint.audioUP.name)
+      if (newComplaint.imageUP != null) {
+        complaintForm.append('image', newComplaint.imageUP, newComplaint.imageUP.name)
+      }
+      if (newComplaint.audioUP != null) {
+        complaintForm.append('audio', newComplaint.audioUP, newComplaint.audioUP.name)
+      }
       fetch('http://localhost:8000/get-token/', {
         mode: 'cors',
         body: credentialsForm,
@@ -132,15 +195,10 @@ export default {
         )
     }
   },
-  // mounted () {
-  //   this.reset()
-  // },
   created: function () {
-
   }
 }
 </script>
 
 <style scoped>
-
 </style>
