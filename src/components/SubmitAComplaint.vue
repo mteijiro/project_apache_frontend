@@ -100,7 +100,7 @@ export default {
     getUserLocation (complaint) {
       var me = this
 
-      function getLocation(callback) {
+      function getLocation (callback) {
         if (navigator.geolocation) {
           navigator.geolocation.getCurrentPosition(callback)
         } else {
