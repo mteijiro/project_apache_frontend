@@ -99,13 +99,15 @@ export default {
   methods: {
     getUserLocation (complaint) {
       var me = this
-      function getLocation (callback) {
+
+      function getLocation(callback) {
         if (navigator.geolocation) {
           navigator.geolocation.getCurrentPosition(callback)
         } else {
           callback(null)
         }
       }
+
       getLocation(function (pos) {
         // do stuff
         if (pos != null) {
@@ -113,20 +115,7 @@ export default {
           me.newComplaint.longitude = pos.coords.longitude
         }
       })
-      // function success (pos) {
-      //   alert(console.log(this.newComplaint.latitude))
-      //   complaint.newComplaint.latitude = pos.coords.latitude
-      //   complaint.newComplaint.longitude = pos.coords.longitude
-      // }
-      // function fail () {
-      //   throw new Error('Unable to get your location.')
-      // }
-      // if (navigator.geolocation) {
-      //   navigator.geolocation.getCurrentPosition(success, fail)
-      // } else {
-      //   throw new Error('Your browser does not support geolocation.')
-      // }
-
+    },
     onImageSelected (event) {
       console.log(event)
       this.imageUpload = event.target.files[0]
@@ -152,7 +141,6 @@ export default {
       }
       if (newComplaint.audioUP != null) {
         complaintForm.append('audio', newComplaint.audioUP, newComplaint.audioUP.name)
-      }
       }
       fetch('http://18.197.8.126:8000/get-token/', {
         mode: 'cors',
