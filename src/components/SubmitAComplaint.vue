@@ -127,23 +127,6 @@ export default {
       //   throw new Error('Your browser does not support geolocation.')
       // }
 
-      // var x = document.getElementById('locationDisplay')
-      // function getLocation () {
-      //   if (navigator.geolocation) {
-      //     navigator.geolocation.getCurrentPosition(showPosition)
-      //   } else {
-      //     x.innerHTML = 'Geolocation is not supported by this browser.'
-      //   }
-      // }
-      // function showPosition (position) {
-      //   // newComplaint.latitude = position.coords.latitude
-      //   // newComplaint.longitude = position.coords.longitude
-      //   x.innerHTML = 'Latitude: ' + position.coords.latitude +
-      //     '<br>Longitude: ' + position.coords.longitude
-      // }
-      // alert(this.newComplaint)
-      // getLocation()
-    },
     onImageSelected (event) {
       console.log(event)
       this.imageUpload = event.target.files[0]
@@ -170,7 +153,8 @@ export default {
       if (newComplaint.audioUP != null) {
         complaintForm.append('audio', newComplaint.audioUP, newComplaint.audioUP.name)
       }
-      fetch('http://localhost:8000/get-token/', {
+      }
+      fetch('http://18.197.8.126:8000/get-token/', {
         mode: 'cors',
         body: credentialsForm,
         method: 'POST'
@@ -179,7 +163,7 @@ export default {
         .then(tokenString => 'Token ' + JSON.parse(tokenString)) // Remove string quotations and concatenate with authorization syntax
         .then(resp4 => {
           alert(resp4) // (For debugging purposes) print out the token.
-          fetch('http://localhost:8000/complaints/', {
+          fetch('http://18.197.8.126:8000/complaints/', {
             mode: 'cors',
             headers: {
               'Authorization': resp4
