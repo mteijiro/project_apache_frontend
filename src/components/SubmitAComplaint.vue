@@ -104,9 +104,13 @@ export default {
       complaintForm.append('category', newComplaint.category)
       complaintForm.append('latitude', String(newComplaint.latitude))
       complaintForm.append('longitude', String(newComplaint.longitude))
-      complaintForm.append('comments', newComplaint.comments)
-      complaintForm.append('image', newComplaint.imageUP, newComplaint.imageUP.name)
-      complaintForm.append('audio', newComplaint.audioUP, newComplaint.audioUP.name)
+      complaintForm.append('comments', newComplaint.comments)      
+      if (newComplaint.imageUP != null) {
+        complaintForm.append('image', newComplaint.imageUP, newComplaint.imageUP.name)
+      }
+      if (newComplaint.audioUP != null) {
+        complaintForm.append('audio', newComplaint.audioUP, newComplaint.audioUP.name)
+      }
       fetch('http://18.197.8.126:8000/get-token/', {
         mode: 'cors',
         body: credentialsForm,
