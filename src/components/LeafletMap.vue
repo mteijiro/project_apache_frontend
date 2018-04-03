@@ -43,15 +43,18 @@ export default {
     }
   },
   mounted () {
-    var mymap = L.map('mapid').setView([55.679479, 12.569470], 13)
-    this.mymap = mymap
-    L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
+    var mymap = L.map('mapid', {
+      minZoom: 13,
       maxZoom: 18,
+      maxBounds: [[55.71, 12.50], [55.65, 12.66]]
+    }).setView([55.679479, 12.569470], 13)
+    L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
       attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
       '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
       'Imagery © <a href="http://mapbox.com">Mapbox</a>',
       id: 'mapbox.streets'
     }).addTo(mymap)
+    // mymap.setMaxBounds(L.bounds(L.point(55.71, 12.50), L.point(55.65, 12.66)))
 
     this.myMarker = L.marker([55.679479, 12.569470], {draggable: true}).addTo(mymap)
       .bindPopup('<b>Location</b><br />Drag me to your location.').openPopup()
@@ -61,6 +64,7 @@ export default {
       outer.curCoords.longCoord = this.getLatLng().lng
       outer.$emit('coordsChanged', outer.curCoords)
     })
+    this.mymap = mymap
 
     // .bindPopup('<b>Hello world!</b><br />I am a popup.').openPopup()
     //

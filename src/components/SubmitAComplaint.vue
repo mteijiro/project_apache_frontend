@@ -65,8 +65,8 @@
 
 <script>
 
+// imports
 import LeafletMap from './LeafletMap.vue'
-// import
 import { OpenStreetMapProvider } from 'leaflet-geosearch'
 
 export default {
