@@ -3,50 +3,91 @@
         <h2>Submit A Complaint</h2>
         <form>
           <template v-if="formIndex === 0">
-            <div>Username:</div>
-            <input type="text" v-model="myCredentials.username" placeholder="username">
-            <div>Password:</div>
-            <input type="password" v-model="myCredentials.password" placeholder="password">
+            <md-field>
+              <label>Username:</label>
+              <md-input v-model="myCredentials.username"></md-input>
+            </md-field>
+
+            <md-field>
+              <label>Password:</label>
+              <md-input type="password" v-model="myCredentials.password"></md-input>
+            </md-field>
           </template>
           <template v-if="formIndex === 1">
-            <div>Severity: {{ newComplaint.severity }}</div>
-            <select v-model="newComplaint.severity">
-              <option disabled value="">Select Severity</option>
-              <option v-for="severityRating in severityRatings" v-bind:key="severityRating.key">
-                {{ severityRating.value }}</option>
-            </select>
-            <br />
-            <div>Category: {{ newComplaint.category }}</div>
-            <select v-model="newComplaint.category">
-              <option disabled value="">Define Category</option>
-              <option v-for="category in categories" v-bind:key="category.key">
-                {{ category.value }}</option>
-            </select>
-            <br />
+
+            <md-field>
+              <label for="severity">Severity</label>
+              <md-select v-model="severity" name="severity" id="severity">
+                <md-option disabled value="">Select Severity</md-option>
+                <md-option value="1">1</md-option>
+                <md-option value="2">2</md-option>
+                <md-option value="3">3</md-option>
+                <md-option value="4">4</md-option>
+                <md-option value="5">5</md-option>
+              </md-select>
+            </md-field>
+
+            <md-field>
+              <label for="category">Category</label>
+              <md-select v-model="category" name="category" id="category">
+                <md-option disabled value="">Select Category</md-option>
+                <md-option value="Business Venue">Business Venue</md-option>
+                <md-option value="Construction">Construction</md-option>
+                <md-option value="Traffic">Traffic</md-option>
+                <md-option value="Street Noise">Street Noise</md-option>
+                <md-option value="Private Party">Private Party</md-option>
+                <md-option value="Other">Other</md-option>
+              </md-select>
+            </md-field>
+
+            <!--<div>Severity: {{ newComplaint.severity }}</div>-->
+            <!--<select v-model="newComplaint.severity">-->
+              <!--<option disabled value="">Select Severity</option>-->
+              <!--<option v-for="severityRating in severityRatings" v-bind:key="severityRating.key">-->
+                <!--{{ severityRating.value }}</option>-->
+            <!--</select>-->
+            <!--<br />-->
+            <!--<div>Category: {{ newComplaint.category }}</div>-->
+            <!--<select v-model="newComplaint.category">-->
+              <!--<option disabled value="">Define Category</option>-->
+              <!--<option v-for="category in categories" v-bind:key="category.key">-->
+                <!--{{ category.value }}</option>-->
+            <!--</select>-->
+            <!--<br />-->
           </template>
           <template v-if="formIndex === 2">
             <span>Location</span>
             <br />
-            <input type="text" v-model="newComplaint.latitude" placeholder="latitude">
-            <input type="text" v-model="newComplaint.longitude" placeholder="longitude">
-            <br />
-            <input type="button" v-on:click="getUserLocation(this)" value="Auto Detect My Location">
-            <br />
-            <input type="text" id="addressBox" placeholder="Search by Address">
-            <button type="button" v-on:click="searchAddress(lookupAddress)">Search</button>
+            <md-field>
+              <label>Latitude:</label>
+              <md-input v-model="newComplaint.latitude"></md-input>
+            </md-field>
+            <md-field>
+              <label>Longitude:</label>
+              <md-input v-model="newComplaint.longitude"></md-input>
+            </md-field>
+            <md-button class="md-raised" v-on:click="getUserLocation(this)">Auto Detect My Location</md-button>
+            <md-field>
+              <label>Search by Address:</label>
+              <md-input id="addressBox"></md-input>
+            </md-field>
+            <md-button class="md-raised" v-on:click="searchAddress(lookupAddress)">Search</md-button>
             <p id="locationDisplay">Please drag the arrow to your location.</p>
             <leaflet-map id="myMap" v-bind:newCoords="{latitude : newComplaint.latitude, longitude : newComplaint.longitude}" v-on:coordsChanged="onDragMapCoords"> </leaflet-map>
           </template>
           <template v-if="formIndex === 3">
-            <div>Comments:</div>
-            <input type="text" v-model="newComplaint.comments" placeholder="comments">
-            <br />
-            <span>Image</span>
-            <input type="file" @change="onImageSelected" accept="image/*">
-            <br />
-            <span>Audio</span>
-            <input type="file" @change="onAudioSelected" accept="audio/*">
-            <br />
+            <md-field>
+              <label>Comments:</label>
+              <md-textarea v-model="newComplaint.comments"></md-textarea>
+            </md-field>
+            <md-field>
+              <label>Image</label>
+              <md-file @change="onImageSelected" accept="image/*" placeholder="Upload image file..." />
+            </md-field>
+            <md-field>
+              <label>Audio</label>
+              <md-file @change="onAudioSelected" accept="audio/*" placeholder="Upload audio file..." />
+            </md-field>
           </template>
           <template v-if="formIndex === endFormIndex">
             <h3>Thank you</h3>
@@ -55,13 +96,13 @@
           <br />
           <div>
             <template v-if="formIndex > 0 && formIndex < endFormIndex">
-              <button type="button" value="back" v-on:click="backButtonPressed()">Back</button>
+              <md-button class="md-raised md-primary" v-on:click="backButtonPressed()">Back</md-button>
             </template>
             <template v-if="formIndex < endFormIndex - 1">
-              <button type="button" value="next" v-on:click="nextButtonPressed()">Next</button>
+              <md-button class="md-raised md-primary" v-on:click="nextButtonPressed()">Next</md-button>
             </template>
             <template v-if="formIndex === endFormIndex - 1">
-              <button type="button" value="submit" v-on:click="submitComplaint(myCredentials, newComplaint)">Submit</button>
+              <md-button class="md-raised md-primary" v-on:click="submitComplaint(myCredentials, newComplaint)">Submit</md-button>
             </template>
           </div>
         </form>
