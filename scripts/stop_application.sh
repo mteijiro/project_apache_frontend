@@ -1,2 +1,2 @@
 #!/usr/bin/env bash
-sudo fuser -k 443/tcp
+sudo fuser -k 80/tcp
