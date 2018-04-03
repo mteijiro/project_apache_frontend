@@ -4,6 +4,7 @@ import Router from 'vue-router'
 import MainMenu from '@/components/MainMenu'
 import SubmitAComplaint from '@/components/SubmitAComplaint'
 import About from '@/components/About'
+import CreateAUser from '@/components/CreateAUser'
 
 Vue.use(Router)
 
@@ -23,6 +24,11 @@ export default new Router({
       path: '/About',
       name: 'About',
       component: About
+    },
+    {
+      path: '/CreateAUser',
+      name: 'CreateAUser',
+      component: CreateAUser
     }
     // {
     //   path: '/LeafletMap',

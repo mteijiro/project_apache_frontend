@@ -100,7 +100,19 @@ export default {
       myCredentials: {},
       imageUpload: null,
       audioUpload: null,
-      categories: [{key: 1, value: 'Street Noise'}, {key: 2, value: 'Automobile'}, {key: 3, value: 'Business Noise'}],
+      categories: [
+        {
+          key: 1,
+          value: 'Street Noise'
+        },
+        {
+          key: 2,
+          value: 'Automobile'
+        },
+        {
+          key: 3,
+          value: 'Business Noise'
+        }],
       severityRatings: [{key: 1, value: '1'}, {key: 2, value: '2'}, {key: 3, value: '3'}, {key: 4, value: '4'},
         {key: 5, value: '5'}, {key: 6, value: '6'}, {key: 7, value: '7'}, {key: 8, value: '8'}, {key: 9, value: '9'},
         {key: 10, value: '10'}]
@@ -116,7 +128,7 @@ export default {
       this.newComplaint.latitude = results[0].y
     },
     // Get the location of the user using the HTML5 getCurrentPosition function.
-    getUserLocation (complaint) {
+    getUserLocation () {
       var me = this
 
       function getLocation (callback) {
@@ -171,14 +183,14 @@ export default {
         this.formIndex = this.formIndex + 1
       }
     },
-    // Compile credentials into a formdata object for a post submission
+    // Compile credentials into a formData object for a post submission
     compileCredentials (myCredentials) {
       const credentialsForm = new FormData()
       credentialsForm.append('username', myCredentials.username)
       credentialsForm.append('password', myCredentials.password)
       return credentialsForm
     },
-    // Compile a complaint into a formdata object for a post submission
+    // Compile a complaint into a formData object for a post submission
     compileComplaint (newComplaint) {
       const complaintForm = new FormData()
       complaintForm.append('severity', newComplaint.severity)
