@@ -86,5 +86,5 @@ export default {
 </script>
 
 <style scoped>
-  #mapid { display: block; margin-left: auto; margin-right: auto; width: 50vw; height: 50vh;}
+  #mapid { display: block; margin-left: auto; margin-right: auto; width: 40vw; height: 50vh;}
 </style>

@@ -6,6 +6,7 @@ import router from './router'
 import VueResource from 'vue-resource'
 import VueMaterial from 'vue-material'
 import 'vue-material/dist/vue-material.min.css'
+import '../src/CustomTheme.scss'
 
 Vue.use(VueMaterial)
 Vue.use(VueResource)
