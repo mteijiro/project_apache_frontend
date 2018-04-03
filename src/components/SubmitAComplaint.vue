@@ -4,9 +4,9 @@
         <form>
           <template v-if="formIndex === 0">
             <div>Username:</div>
-            <input type="text" v-model="myCredentials.username" value="username">
+            <input type="text" v-model="myCredentials.username" placeholder="username">
             <div>Password:</div>
-            <input type="text" v-model="myCredentials.password" value="password">
+            <input type="text" v-model="myCredentials.password" placeholder="password">
           </template>
           <template v-if="formIndex === 1">
             <div>Severity: {{ newComplaint.severity }}</div>
@@ -27,19 +27,19 @@
           <template v-if="formIndex === 2">
             <span>Location</span>
             <br />
-            <input type="text" v-model="newComplaint.latitude" value="latitude">
-            <input type="text" v-model="newComplaint.longitude" value="longitude">
+            <input type="text" v-model="newComplaint.latitude" placeholder="latitude">
+            <input type="text" v-model="newComplaint.longitude" placeholder="longitude">
             <br />
             <input type="button" v-on:click="getUserLocation(this)" value="Auto Detect My Location">
             <br />
-            <input type="text" id="addressBox" value="Search by Address">
+            <input type="text" id="addressBox" placeholder="Search by Address">
             <button type="button" v-on:click="searchAddress(lookupAddress)">Search</button>
             <p id="locationDisplay">Please drag the arrow to your location.</p>
             <leaflet-map id="myMap" v-bind:newCoords="{latitude : newComplaint.latitude, longitude : newComplaint.longitude}" v-on:coordsChanged="onDragMapCoords"> </leaflet-map>
           </template>
           <template v-if="formIndex === 3">
             <div>Comments:</div>
-            <input type="text" v-model="newComplaint.comments" value="comments">
+            <input type="text" v-model="newComplaint.comments" placeholder="comments">
             <br />
             <span>Image</span>
             <input type="file" @change="onImageSelected" accept="image/*">
@@ -48,9 +48,15 @@
             <input type="file" @change="onAudioSelected" accept="audio/*">
             <br />
           </template>
+          <template v-if="formIndex === 4">
+            <h3>Thank you</h3>
+            <p>Your complaint has been submitted</p>
+          </template>
           <br />
-          <template>
-            <button type="button" value="back" v-on:click="backButtonPressed()">Back</button>
+          <template v-if="formIndex < endFormIndex">
+            <template v-if="formIndex > 0">
+              <button type="button" value="back" v-on:click="backButtonPressed()">Back</button>
+            </template>
             <button type="button" value="submit" v-on:click="submitComplaint(myCredentials, newComplaint)">{{ submitOrNext() }}</button>
           </template>
         </form>
@@ -78,14 +84,14 @@ export default {
         severity: '1',
         latitude: 0.0,
         longitude: 0.0,
-        comments: 'no comments',
+        comments: '',
         imageUP: null,
         audioUP: null
       },
       lookupAddress: '',
       provider: null,
       formIndex: 0,
-      endFormIndex: 3,
+      endFormIndex: 4,
       myCredentials: {},
       imageUpload: null,
       audioUpload: null,
@@ -125,7 +131,7 @@ export default {
       })
     },
     submitOrNext () {
-      if (this.formIndex < this.endFormIndex) {
+      if (this.formIndex < this.endFormIndex - 1) {
         return 'Next'
       } else {
         return 'Submit'
