@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import LeafletMap from '@/components/LeafletMap'
+// import LeafletMap from '@/components/LeafletMap'
 import MainMenu from '@/components/MainMenu'
 import SubmitAComplaint from '@/components/SubmitAComplaint'
 import About from '@/components/About'
@@ -23,11 +23,11 @@ export default new Router({
       path: '/About',
       name: 'About',
       component: About
-    },
-    {
-      path: '/LeafletMap',
-      name: 'LeafletMap',
-      component: LeafletMap
     }
+    // {
+    //   path: '/LeafletMap',
+    //   name: 'LeafletMap',
+    //   component: LeafletMap
+    // }
   ]
 })
