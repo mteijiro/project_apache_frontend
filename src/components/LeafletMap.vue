@@ -54,7 +54,6 @@ export default {
       'Imagery © <a href="http://mapbox.com">Mapbox</a>',
       id: 'mapbox.streets'
     }).addTo(mymap)
-    // mymap.setMaxBounds(L.bounds(L.point(55.71, 12.50), L.point(55.65, 12.66)))
 
     this.myMarker = L.marker([55.679479, 12.569470], {draggable: true}).addTo(mymap)
       .bindPopup('<b>Location</b><br />Drag me to your location.').openPopup()
@@ -65,46 +64,9 @@ export default {
       outer.$emit('coordsChanged', outer.curCoords)
     })
     this.mymap = mymap
-
-    // .bindPopup('<b>Hello world!</b><br />I am a popup.').openPopup()
-    //
-    // L.circle([51.508, -0.11], 500, {
-    //   color: 'red',
-    //   fillColor: '#f03',
-    //   fillOpacity: 0.5
-    // }).addTo(mymap).bindPopup('I am a circle.')
-    //
-    // L.polygon([
-    //   [51.509, -0.08],
-    //   [51.503, -0.06],
-    //   [51.51, -0.047]
-    // ]).addTo(mymap).bindPopup('I am a polygon.')
-    //
-    //
-    // var popup = L.popup()
-
-    // function getClickCoords (e) {
-    //   this.latCoord = e.latlng.lat
-    //   this.longCoord = e.latlng.lng
-    //   console.log('lat coord is : ' + this.latCoord + 'long coord is :' + this.longCoord)
-    // }
-
-    // function moveToCoords (lat, long) {
-    //   mymap.setView([lat, long], 13)
-    //   this.latCoord = lat
-    //   this.longCoord = long
-    // }
-
-    // function onMapClick (e) {
-    //   popup
-    //     .setLatLng(e.latlng)
-    //     .setContent('You clicked the map at ' + e.latlng.toString())
-    //     .openOn(mymap)
-    // }
-    // mymap.on('click', onMapClick)
-    // mymap.on('click', getClickCoords)
   },
   methods: {
+    // Update the map with new coordinates.
     updateCoords () {
       this.curCoords.latCoord = this.newCoords.latitude
       this.curCoords.longCoord = this.newCoords.longitude
@@ -113,6 +75,7 @@ export default {
     }
   },
   watch: {
+    // Check when the newCoords prop is updated so that leaflet can update the map
     newCoords: {
       handler: function (val, oldVal) {
         this.updateCoords()

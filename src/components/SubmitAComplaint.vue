@@ -57,7 +57,7 @@
             <template v-if="formIndex > 0">
               <button type="button" value="back" v-on:click="backButtonPressed()">Back</button>
             </template>
-            <button type="button" value="submit" v-on:click="submitComplaint(myCredentials, newComplaint)">{{ submitOrNext() }}</button>
+            <button type="button" value="submit" v-on:click="nextPage(myCredentials, newComplaint)">{{ submitOrNext() }}</button>
           </template>
         </form>
     </div>
@@ -102,15 +102,15 @@ export default {
     }
   },
   methods: {
+    // Search the given address using the provider defined (Google, OpenStreetmaps, etc.)
     async searchAddress () {
       // search
       const address = document.getElementById('addressBox').value
-      console.log('Your Address: ' + address)
       const results = await this.provider.search({ query: address })
-      console.log(results)
       this.newComplaint.longitude = results[0].x
       this.newComplaint.latitude = results[0].y
     },
+    // Get the location of the user using the HTML5 getCurrentPosition function.
     getUserLocation (complaint) {
       var me = this
 
@@ -121,7 +121,8 @@ export default {
           callback(null)
         }
       }
-
+      // Update the coordinates on this vue object with the new coordinates passed in
+      // Used as a callback for the getLocation function above
       getLocation(function (pos) {
         // do stuff
         if (pos != null) {
@@ -130,6 +131,8 @@ export default {
         }
       })
     },
+    // Determine if the next button should change to submit text.s
+    // Will be deprecated when the two buttons are separate
     submitOrNext () {
       if (this.formIndex < this.endFormIndex - 1) {
         return 'Next'
@@ -137,36 +140,45 @@ export default {
         return 'Submit'
       }
     },
+    // Update the latitude and longitude values on this vue object based off of the values passed in
+    // Used specifically for the map object.
     onDragMapCoords: function (newCoords) {
       this.newComplaint.latitude = newCoords.latCoord
       this.newComplaint.longitude = newCoords.longCoord
     },
+    // Prepare image file for submission
     onImageSelected (event) {
-      console.log(event)
       this.imageUpload = event.target.files[0]
       this.newComplaint.imageUP = this.imageUpload
     },
+    // Prepare audio file for submission
     onAudioSelected (event) {
-      console.log(event)
       this.audioUpload = event.target.files[0]
       this.newComplaint.audioUP = this.audioUpload
     },
+    // Decrement the index to tell vue to go to the previous page.
     backButtonPressed () {
       if (this.formIndex > 0) {
         this.formIndex = this.formIndex - 1
       }
     },
-    submitComplaint: function (myCredentials, newComplaint) {
+    // Advance the page or submit the form
+    nextPage: function (myCredentials, newComplaint) {
       if (this.formIndex < this.endFormIndex) {
         this.formIndex = this.formIndex + 1
       } else {
         this.sendToDatabase(myCredentials, newComplaint)
       }
     },
-    sendToDatabase (myCredentials, newComplaint) {
+    // Compile credentials into a formdata object for a post submission
+    compileCredentials (myCredentials) {
       const credentialsForm = new FormData()
       credentialsForm.append('username', myCredentials.username)
       credentialsForm.append('password', myCredentials.password)
+      return credentialsForm
+    },
+    // Compile a complaint into a formdata object for a post submission
+    compileComplaint (newComplaint) {
       const complaintForm = new FormData()
       complaintForm.append('severity', newComplaint.severity)
       complaintForm.append('category', newComplaint.category)
@@ -179,6 +191,11 @@ export default {
       if (newComplaint.audioUP != null) {
         complaintForm.append('audio', newComplaint.audioUP, newComplaint.audioUP.name)
       }
+      return complaintForm
+    },
+    sendToDatabase (myCredentials, newComplaint) {
+      const credentialsForm = this.compileCredentials(myCredentials)
+      const complaintForm = this.compileComplaint(newComplaint)
       fetch('http://18.197.8.126:8000/get-token/', {
         mode: 'cors',
         body: credentialsForm,
