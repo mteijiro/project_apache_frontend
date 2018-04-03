@@ -6,7 +6,7 @@
             <div>Username:</div>
             <input type="text" v-model="myCredentials.username" placeholder="username">
             <div>Password:</div>
-            <input type="text" v-model="myCredentials.password" placeholder="password">
+            <input type="password" v-model="myCredentials.password" placeholder="password">
           </template>
           <template v-if="formIndex === 1">
             <div>Severity: {{ newComplaint.severity }}</div>
@@ -48,17 +48,22 @@
             <input type="file" @change="onAudioSelected" accept="audio/*">
             <br />
           </template>
-          <template v-if="formIndex === 4">
+          <template v-if="formIndex === endFormIndex">
             <h3>Thank you</h3>
             <p>Your complaint has been submitted</p>
           </template>
           <br />
-          <template v-if="formIndex < endFormIndex">
-            <template v-if="formIndex > 0">
+          <div>
+            <template v-if="formIndex > 0 && formIndex < endFormIndex">
               <button type="button" value="back" v-on:click="backButtonPressed()">Back</button>
             </template>
-            <button type="button" value="submit" v-on:click="nextPage(myCredentials, newComplaint)">{{ submitOrNext() }}</button>
-          </template>
+            <template v-if="formIndex < endFormIndex - 1">
+              <button type="button" value="next" v-on:click="nextButtonPressed()">Next</button>
+            </template>
+            <template v-if="formIndex === endFormIndex - 1">
+              <button type="button" value="submit" v-on:click="submitComplaint(myCredentials, newComplaint)">Submit</button>
+            </template>
+          </div>
         </form>
     </div>
 </template>
@@ -131,13 +136,16 @@ export default {
         }
       })
     },
-    // Determine if the next button should change to submit text.s
-    // Will be deprecated when the two buttons are separate
-    submitOrNext () {
+    // Decrement the index to tell vue to go to the previous page.
+    backButtonPressed () {
+      if (this.formIndex > 0) {
+        this.formIndex = this.formIndex - 1
+      }
+    },
+    // Decrement the index to tell vue to go to the previous page.
+    nextButtonPressed () {
       if (this.formIndex < this.endFormIndex - 1) {
-        return 'Next'
-      } else {
-        return 'Submit'
+        this.formIndex = this.formIndex + 1
       }
     },
     // Update the latitude and longitude values on this vue object based off of the values passed in
@@ -156,18 +164,11 @@ export default {
       this.audioUpload = event.target.files[0]
       this.newComplaint.audioUP = this.audioUpload
     },
-    // Decrement the index to tell vue to go to the previous page.
-    backButtonPressed () {
-      if (this.formIndex > 0) {
-        this.formIndex = this.formIndex - 1
-      }
-    },
     // Advance the page or submit the form
-    nextPage: function (myCredentials, newComplaint) {
-      if (this.formIndex < this.endFormIndex) {
-        this.formIndex = this.formIndex + 1
-      } else {
+    submitComplaint: function (myCredentials, newComplaint) {
+      if (this.formIndex === this.endFormIndex - 1) {
         this.sendToDatabase(myCredentials, newComplaint)
+        this.formIndex = this.formIndex + 1
       }
     },
     // Compile credentials into a formdata object for a post submission
@@ -196,7 +197,7 @@ export default {
     sendToDatabase (myCredentials, newComplaint) {
       const credentialsForm = this.compileCredentials(myCredentials)
       const complaintForm = this.compileComplaint(newComplaint)
-      fetch('http://18.197.8.126:8000/get-token/', {
+      fetch('http://localhost:8000/get-token/', {
         mode: 'cors',
         body: credentialsForm,
         method: 'POST'
@@ -205,7 +206,7 @@ export default {
         .then(tokenString => 'Token ' + JSON.parse(tokenString)) // Remove string quotations and concatenate with authorization syntax
         .then(resp4 => {
           // alert(resp4) // (For debugging purposes) print out the token.
-          fetch('http://18.197.8.126:8000/complaints/', {
+          fetch('http://localhost:8000/complaints/', {
             mode: 'cors',
             headers: {
               'Authorization': resp4
@@ -218,7 +219,6 @@ export default {
               alert('Complaint Data: ' + JSON.stringify(resp))
             })
         })
-      this.formIndex = 0
     }
   },
   created: function () {
