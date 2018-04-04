@@ -2,19 +2,28 @@
   <div>
     <h2>Create A User</h2>
     <form>
-      <div>Username:</div>
-      <input type="text" v-model="myCredentials.username" placeholder="username">
-      <div>Password:</div>
-      <input type="password" v-model="myCredentials.password" placeholder="password">
-      <div>Confirm Password:</div>
-      <input type="password" v-model="myCredentials.confirmPassword" placeholder="confirm password">
+      <md-field>
+        <label>Username:</label>
+        <md-input type="text" v-model="myCredentials.username" placeholder="username"></md-input>
+      </md-field>
+      <md-field>
+        <label>Password:</label>
+        <md-input type="password" v-model="myCredentials.password" placeholder="password"></md-input>
+      </md-field>
+      <md-field>
+      <label>Confirm Password:</label>
+      <md-input type="password" v-model="myCredentials.confirmPassword" placeholder="confirm password"></md-input>
       <p v-if="myCredentials.password !== myCredentials.confirmPassword">Passwords do not match</p>
-      <div>First Name:</div>
-      <input type="text" v-model="myCredentials.firstName" placeholder="First Name">
-      <div>Last Name:</div>
-      <input type="text" v-model="myCredentials.lastName" placeholder="Last Name">
-      <br />
-      <button type="button" value="submit" v-on:click="createUser(myCredentials)">Create</button>
+      </md-field>
+      <md-field>
+      <label>First Name:</label>
+      <md-input type="text" v-model="myCredentials.firstName" placeholder="First Name"></md-input>
+      </md-field>
+      <md-field>
+      <label>Last Name:</label>
+      <md-input type="text" v-model="myCredentials.lastName" placeholder="Last Name"></md-input>
+      </md-field>
+      <md-button class="md-raised md-primary" type="button" value="submit" v-on:click="createUser(myCredentials)">Create</md-button>
     </form>
   </div>
 </template>
@@ -48,7 +57,7 @@ export default {
       // Compile the user data into formData for sending
       const credentialsForm = this.compileCredentials(myCredentials)
       // Send the request
-      fetch('http://localhost:8000/users/', {
+      fetch('http://18.197.28.234:8000/users/', {
         mode: 'cors',
         body: credentialsForm,
         method: 'POST'
