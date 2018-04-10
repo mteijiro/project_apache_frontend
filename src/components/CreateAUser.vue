@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h2>Create A User</h2>
+    <h1>Register</h1>
     <form>
       <md-field>
         <label>Username:</label>

@@ -1,6 +1,6 @@
 <template>
     <div class="greetings">
-        <h2>Submit A Complaint</h2>
+        <h1>Submit A Complaint</h1>
         <form>
           <md-steppers v-bind:md-active-step="formSteps[formIndex]">
             <md-step v-bind:id="formSteps[0]" v-on:click="formIndex=0" v-bind:md-description="formIndex[0]" v-bind:md-label="formIndex[0]" v-bind:md-done="formIndex > 0">
