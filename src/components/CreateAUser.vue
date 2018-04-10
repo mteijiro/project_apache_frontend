@@ -25,8 +25,8 @@
       <md-input type="text" v-model="myCredentials.lastName"></md-input>
       </md-field>
       <md-button class="md-raised md-primary" type="button" value="submit" v-on:click="createUser(myCredentials)">Create</md-button>
-      <p class="err" v-if="invalidCreation">{{ errorMessage }}. The username be taken. Please try again with a different username or at a later date</p>
-      <p class="err" v-if="invalidToken">An invalid token was submitted</p>
+      <p class="err" v-if="invalidCreation">{{ errorMessage }}. The username may be taken. Please try again with a different username or at a later date</p>
+      <p class="err" v-if="invalidToken">Error: invalid token</p>
     </form>
   </div>
 </template>
@@ -63,7 +63,7 @@ export default {
       // Compile the user data into formData for sending
       const credentialsForm = this.compileCreateCredentials(myCredentials)
       // Send the request
-      fetch('http://18.197.28.234:8000/users/', {
+      fetch(this.$api + '/users/', {
         mode: 'cors',
         body: credentialsForm,
         method: 'POST'
@@ -94,7 +94,7 @@ export default {
     login (credentials) {
       console.log(credentials)
       var credentialsForm = this.compileCredentials(credentials)
-      fetch('http://18.197.28.234:8000/get-token/', {
+      fetch(this.$api + '/get-token/', {
         mode: 'cors',
         body: credentialsForm,
         method: 'POST'

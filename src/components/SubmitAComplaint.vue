@@ -27,7 +27,7 @@
             <md-field>
               <label>Category</label>
               <md-select v-model="newComplaint.category" name="category" id="category">
-                <md-option disabled value="">Select Severity</md-option>
+                <md-option disabled value="">Select Category</md-option>
                 <md-option v-for="category in categories" v-bind:key="category.key" v-bind:value="category.value">
                   {{ category.value }}
                 </md-option>
@@ -170,25 +170,17 @@ export default {
         },
         {
           key: 2,
-          value: 'Traffic'
+          value: 'Private Celebration'
         },
         {
           key: 3,
-          value: 'Business Venue'
+          value: 'Bar/Restaurant'
         },
         {
           key: 4,
           value: 'Construction'
-        },
-        {
-          key: 5,
-          value: 'Private Property'
-        },
-        {
-          key: 6,
-          value: 'Other'
         }],
-      noiseGuardCategories: ['Business Venue', 'Construction']
+      noiseGuardCategories: ['Bar/Restaurant', 'Construction']
     }
   },
   methods: {
@@ -306,7 +298,7 @@ export default {
     sendToDatabase (myCredentials, newComplaint) {
       // const credentialsForm = this.compileCredentials(myCredentials)
       const complaintForm = this.compileComplaint(newComplaint)
-      // fetch('http://18.197.28.234:8000/get-token/', {
+      // fetch(this.$api + '/get-token/', {
       //   mode: 'cors',
       //   body: credentialsForm,
       //   method: 'POST'
@@ -316,7 +308,7 @@ export default {
       //   .then(resp4 => {
       // alert(resp4) // (For debugging purposes) print out the token.
       var myAuth = 'Token ' + JSON.parse(this.getCookie('token'))
-      fetch('http://18.197.28.234:8000/complaints/', {
+      fetch(this.$api + '/complaints/', {
         mode: 'cors',
         headers: {
           'Authorization': myAuth

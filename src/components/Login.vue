@@ -48,7 +48,7 @@ export default {
     },
     login () {
       var credentialsForm = this.compileCredentials(this.myCredentials)
-      fetch('http://localhost:8000/get-token/', {
+      fetch(this.$api + '/get-token/', {
         mode: 'cors',
         body: credentialsForm,
         method: 'POST'

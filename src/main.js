@@ -13,6 +13,13 @@ Vue.use(VueResource)
 
 Vue.config.productionTip = false
 
+var config = {
+  api: 'http://18.197.28.234:8000',
+  localApi: 'http://localhost:8000'
+}
+
+Vue.prototype.$api = config.api
+
 /* eslint-disable no-new */
 new Vue({
   el: '#app',
