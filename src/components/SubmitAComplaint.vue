@@ -2,7 +2,7 @@
   <div class="greetings">
     <h1>Submit A Complaint</h1>
     <form>
-      <md-steppers v-bind:md-active-step="formSteps[formIndex]">
+      <md-steppers v-bind:md-active-step="formSteps[formIndex]" md-linear>
         <md-step v-bind:id="formSteps[0]" v-on:click="formIndex=0" v-bind:md-description="formIndex[0]"
                  v-bind:md-label="formIndex[0]" v-bind:md-done="formIndex > 0">
           <template v-if="formIndex === 0">
@@ -365,4 +365,7 @@ export default {
 </script>
 
 <style scoped>
+  .md-steppers-navigation {
+    box-shadow: none!important;
+  }
 </style>

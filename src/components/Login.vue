@@ -15,6 +15,7 @@
     <p>Our website uses cookies to store your authentication details.</p>
     <md-button class="md-raised md-primary" v-on:click="login()">Submit</md-button>
     <md-button class="md-raised md-primary" v-on:click="getCookie('token')">TestCookie</md-button>
+    <p id="errorMsg" v-if="invalidToken">Invalid username or password, please try again</p>
   </div>
 </template>
 
@@ -27,7 +28,8 @@ export default {
         username: '',
         password: '',
         token: ''
-      }
+      },
+      invalidToken: false
     }
   },
   methods: {
@@ -44,9 +46,19 @@ export default {
         mode: 'cors',
         body: credentialsForm,
         method: 'POST'
-      }).then(response => response.json()) // Convert the token response into a JSON object
+      }).then(this.handleErrors)
+        .then(response => response.json()) // Convert the token response into a JSON object
         .then(JSONresponse => JSON.stringify(JSONresponse.token)) // Select the token string from the object.
         .then(token => { this.myCredentials.token = token; console.log(token); document.cookie = 'username=' + this.myCredentials.username; document.cookie = 'token=' + token })
+        .then(response => {
+          console.log('Complaint Success')
+          this.invalidToken = false
+          this.$router.push('/')
+        })
+        .catch(error => {
+          console.log(error)
+          this.invalidToken = true
+        })
     },
     getCookie (cname) {
       var name = cname + '='
@@ -63,11 +75,20 @@ export default {
         }
       }
       return ''
+    },
+    handleErrors (response) {
+      if (!response.ok) {
+        throw Error(response.statusText)
+      }
+      return response
     }
   }
 }
 </script>
 
 <style scoped>
+  #errorMsg {
+    color:red;
+  }
 
 </style>
