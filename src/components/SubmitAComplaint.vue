@@ -1,24 +1,18 @@
 <template>
   <div class="greetings">
     <h1>Submit A Complaint</h1>
-    <form>
       <md-steppers v-bind:md-active-step="formSteps[formIndex]" md-linear>
         <md-step v-bind:id="formSteps[0]" v-on:click="formIndex=0" v-bind:md-description="formIndex[0]"
                  v-bind:md-label="formIndex[0]" v-bind:md-done="formIndex > 0">
           <template v-if="formIndex === 0">
-            <!--<md-field>-->
-            <!--<label>Username:</label>-->
-            <!--<md-input v-model="myCredentials.username"></md-input>-->
-            <!--</md-field>-->
-
-            <!--<md-field>-->
-            <!--<label>Password:</label>-->
-            <!--<md-input type="password" v-model="myCredentials.password"></md-input>-->
-            <!--</md-field>-->
-            <h2>You must be logged in to submit a complaint.</h2>
-            <router-link to="Login">You can log in here</router-link>
-            <p>If your username does not appear below then you are not logged in</p>
-            <h3>You are currently logged in as: {{ getCookie ('username') }}</h3>
+            <template v-if="!checkForToken()">
+              <h2>You must be logged in to submit a complaint.</h2>
+              <router-link to="Login">You can log in here</router-link>
+            </template>
+            <template v-if="checkForToken()">
+              <h2>You are currently logged in as: {{ getCookie ('username') }}</h2>
+              <p>Press next to continue</p>
+            </template>
           </template>
         </md-step>
         <md-step v-bind:id="formSteps[1]" v-on:click="formIndex=1" v-bind:md-label="formIndex[1]"
@@ -86,7 +80,7 @@
           <template v-if="formIndex === endFormIndex && returnParty === 'Noise Guard'">
             <h3>Thank you</h3>
             <p>Thank you for your complaint, however we do not accept complaints related to:</p>
-            <ul>
+            <ul id="NGlist">
               <li>Musical noise from event (no restorations)</li>
               <li>Music noise from restaurants</li>
               <li>Music noise due to open doors / windows</li>
@@ -123,7 +117,6 @@
           </md-button>
         </template>
       </div>
-    </form>
   </div>
 </template>
 
@@ -345,6 +338,16 @@ export default {
         }
       }
       return ''
+    },
+    checkForToken () {
+      // this.getCookie('username')
+      this.myCredentials.token = this.getCookie('token')
+      console.log(this.myCredentials.token)
+      if (this.myCredentials.token.length > 0) {
+        return true
+      } else {
+        return false
+      }
     }
   },
   created: function () {
@@ -359,5 +362,8 @@ export default {
 <style scoped>
   .md-steppers-navigation {
     box-shadow: none!important;
+  }
+  #NGlist {
+    margin-left: 0;
   }
 </style>

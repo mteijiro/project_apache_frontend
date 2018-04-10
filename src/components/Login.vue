@@ -15,7 +15,6 @@
       </md-field>
       <p>Our website uses cookies to store your authentication details.</p>
       <md-button class="md-raised md-primary" v-on:click="login()">Log In</md-button>
-      <md-button class="md-raised md-primary" v-on:click="getCookie('token')">TestCookie</md-button>
       <p id="errorMsg" v-if="invalidToken">Invalid username or password, please try again</p>
     </template>
     <template v-if="loggedIn">
@@ -101,7 +100,7 @@ export default {
       }
       return response
     },
-    checkForCookies () {
+    checkForToken () {
       // this.getCookie('username')
       this.myCredentials.token = this.getCookie('token')
       console.log(this.myCredentials.token)
@@ -113,7 +112,7 @@ export default {
     }
   },
   mounted () {
-    this.loggedIn = this.checkForCookies()
+    this.loggedIn = this.checkForToken()
   }
 }
 </script>

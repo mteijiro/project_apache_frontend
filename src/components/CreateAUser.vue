@@ -1,7 +1,11 @@
 <template>
   <div>
     <h1>Register</h1>
-    <form>
+    <template v-if="checkForToken()">
+      <h2>Please log out before creating a new account</h2>
+      <router-link to="Login">Log out here</router-link>
+    </template>
+    <form v-if="!checkForToken()">
       <md-field>
         <label>Username:</label>
         <md-input type="text" v-model="myCredentials.username"></md-input>
@@ -117,6 +121,32 @@ export default {
         throw Error(response.statusText)
       }
       return response
+    },
+    getCookie (cname) {
+      var name = cname + '='
+      var decodedCookie = decodeURIComponent(document.cookie)
+      var ca = decodedCookie.split(';')
+      for (var i = 0; i < ca.length; i++) {
+        var c = ca[i]
+        while (c.charAt(0) === ' ') {
+          c = c.substring(1)
+        }
+        if (c.indexOf(name) === 0) {
+          console.log(c.substring(name.length, c.length))
+          return c.substring(name.length, c.length)
+        }
+      }
+      return ''
+    },
+    checkForToken () {
+      // this.getCookie('username')
+      this.myCredentials.token = this.getCookie('token')
+      console.log(this.myCredentials.token)
+      if (this.myCredentials.token.length > 0) {
+        return true
+      } else {
+        return false
+      }
     }
   }
 }

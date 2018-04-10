@@ -56,7 +56,7 @@ export default {
     }).addTo(mymap)
 
     this.myMarker = L.marker([55.679479, 12.569470], {draggable: true}).addTo(mymap)
-      .bindPopup('<b>Location</b><br />Drag me to your location.').openPopup()
+    // .bindPopup('<b>Location</b><br />Drag me to your location.').openPopup()
     var outer = this
     this.myMarker.on('dragend', function (e) {
       outer.curCoords.latCoord = this.getLatLng().lat
