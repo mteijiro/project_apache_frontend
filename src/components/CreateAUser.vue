@@ -4,24 +4,24 @@
     <form>
       <md-field>
         <label>Username:</label>
-        <md-input type="text" v-model="myCredentials.username" placeholder="username"></md-input>
+        <md-input type="text" v-model="myCredentials.username"></md-input>
       </md-field>
       <md-field>
         <label>Password:</label>
-        <md-input type="password" v-model="myCredentials.password" placeholder="password"></md-input>
+        <md-input type="password" v-model="myCredentials.password"></md-input>
       </md-field>
       <md-field>
       <label>Confirm Password:</label>
-      <md-input type="password" v-model="myCredentials.confirmPassword" placeholder="confirm password"></md-input>
-      <p v-if="myCredentials.password !== myCredentials.confirmPassword">Passwords do not match</p>
+      <md-input type="password" v-model="myCredentials.confirmPassword"></md-input>
+      <span v-if="myCredentials.password !== myCredentials.confirmPassword">Passwords do not match</span>
       </md-field>
       <md-field>
       <label>First Name:</label>
-      <md-input type="text" v-model="myCredentials.firstName" placeholder="First Name"></md-input>
+      <md-input type="text" v-model="myCredentials.firstName"></md-input>
       </md-field>
       <md-field>
       <label>Last Name:</label>
-      <md-input type="text" v-model="myCredentials.lastName" placeholder="Last Name"></md-input>
+      <md-input type="text" v-model="myCredentials.lastName"></md-input>
       </md-field>
       <md-button class="md-raised md-primary" type="button" value="submit" v-on:click="createUser(myCredentials)">Create</md-button>
     </form>
