@@ -138,7 +138,7 @@ export default {
   components: {
     'leaflet-map': LeafletMap
   },
-  data() {
+  data () {
     return {
       newComplaint: {
         username: '',
@@ -193,7 +193,7 @@ export default {
   },
   methods: {
     // Search the given address using the provider defined (Google, OpenStreetmaps, etc.)
-    async searchAddress() {
+    async searchAddress () {
       // search
       const address = document.getElementById('addressBox').value
       const results = await this.provider.search({query: address})
@@ -201,7 +201,7 @@ export default {
       this.newComplaint.latitude = results[0].y
     },
     // If the category is dealt with by the noise guard, returns true, else returns false
-    isNoiseGuard(category) {
+    isNoiseGuard (category) {
       var ngc = this.noiseGuardCategories
       for (var i = 0; i < ngc.length; i++) {
         if (category === ngc[i]) {
@@ -211,7 +211,7 @@ export default {
       return false
     },
     // Function that runs after the next button is pressed when a noise guard item is selected
-    onNoiseGuardSelected() {
+    onNoiseGuardSelected () {
       if (this.isNoiseGuard(this.newComplaint.category)) {
         this.returnParty = 'Noise Guard'
       } else {
@@ -219,10 +219,10 @@ export default {
       }
     },
     // Get the location of the user using the HTML5 getCurrentPosition function.
-    getUserLocation() {
+    getUserLocation () {
       var me = this
 
-      function getLocation(callback) {
+      function getLocation (callback) {
         if (navigator.geolocation) {
           navigator.geolocation.getCurrentPosition(callback)
         } else {
@@ -241,13 +241,13 @@ export default {
       })
     },
     // Decrement the index to tell vue to go to the previous page.
-    backButtonPressed() {
+    backButtonPressed () {
       if (this.formIndex > 0) {
         this.formIndex = this.formIndex - 1
       }
     },
     // Decrement the index to tell vue to go to the previous page.
-    nextButtonPressed() {
+    nextButtonPressed () {
       if (this.formIndex < this.endFormIndex - 1) {
         this.onNoiseGuardSelected()
         if (this.returnParty === 'Noise Guard') {
@@ -264,12 +264,12 @@ export default {
       this.newComplaint.longitude = newCoords.longCoord
     },
     // Prepare image file for submission
-    onImageSelected(event) {
+    onImageSelected (event) {
       this.imageUpload = event.target.files[0]
       this.newComplaint.imageUP = this.imageUpload
     },
     // Prepare audio file for submission
-    onAudioSelected(event) {
+    onAudioSelected (event) {
       this.audioUpload = event.target.files[0]
       this.newComplaint.audioUP = this.audioUpload
     },
@@ -281,14 +281,14 @@ export default {
       }
     },
     // Compile credentials into a formData object for a post submission
-    compileCredentials(myCredentials) {
+    compileCredentials (myCredentials) {
       const credentialsForm = new FormData()
       credentialsForm.append('username', myCredentials.username)
       credentialsForm.append('password', myCredentials.password)
       return credentialsForm
     },
     // Compile a complaint into a formData object for a post submission
-    compileComplaint(newComplaint) {
+    compileComplaint (newComplaint) {
       const complaintForm = new FormData()
       complaintForm.append('severity', newComplaint.severity)
       complaintForm.append('category', newComplaint.category)
@@ -303,10 +303,10 @@ export default {
       }
       return complaintForm
     },
-    sendToDatabase(myCredentials, newComplaint) {
+    sendToDatabase (myCredentials, newComplaint) {
       // const credentialsForm = this.compileCredentials(myCredentials)
       const complaintForm = this.compileComplaint(newComplaint)
-      // fetch('http://localhost:8000/get-token/', {
+      // fetch('http://18.197.28.234:8000/get-token/', {
       //   mode: 'cors',
       //   body: credentialsForm,
       //   method: 'POST'
@@ -316,7 +316,7 @@ export default {
       //   .then(resp4 => {
       // alert(resp4) // (For debugging purposes) print out the token.
       var myAuth = 'Token ' + JSON.parse(this.getCookie('token'))
-      fetch('http://localhost:8000/complaints/', {
+      fetch('http://18.197.28.234:8000/complaints/', {
         mode: 'cors',
         headers: {
           'Authorization': myAuth
@@ -332,13 +332,13 @@ export default {
         })
       // })
     },
-    handleErrors(response) {
+    handleErrors (response) {
       if (!response.ok) {
         throw Error(response.statusText)
       }
       return response
     },
-    getCookie(cname) {
+    getCookie (cname) {
       var name = cname + '='
       var decodedCookie = decodeURIComponent(document.cookie)
       var ca = decodedCookie.split(';')

@@ -49,7 +49,7 @@ export default {
     },
     login () {
       var credentialsForm = this.compileCredentials(this.myCredentials)
-      fetch('http://localhost:8000/get-token/', {
+      fetch('http://18.197.28.234:8000/get-token/', {
         mode: 'cors',
         body: credentialsForm,
         method: 'POST'
@@ -59,7 +59,7 @@ export default {
     },
     getData (token) {
       alert(token)
-      fetch('http://localhost:8000/complaints/', {
+      fetch('http://18.197.28.234:8000/complaints/', {
         mode: 'cors',
         headers: {
           'Authorization': 'Token ' + token
@@ -81,7 +81,7 @@ export default {
     },
     justDoEverything () {
       var credentialsForm = this.compileCredentials(this.myCredentials)
-      fetch('http://localhost:8000/get-token/', {
+      fetch('http://18.197.28.234:8000/get-token/', {
         mode: 'cors',
         body: credentialsForm,
         method: 'POST'

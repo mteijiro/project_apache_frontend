@@ -40,7 +40,7 @@ export default {
     },
     login () {
       var credentialsForm = this.compileCredentials(this.myCredentials)
-      fetch('http://localhost:8000/get-token/', {
+      fetch('http://18.197.28.234:8000/get-token/', {
         mode: 'cors',
         body: credentialsForm,
         method: 'POST'
