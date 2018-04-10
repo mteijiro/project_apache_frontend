@@ -13,7 +13,8 @@
       <md-field>
       <label>Confirm Password:</label>
       <md-input type="password" v-model="myCredentials.confirmPassword"></md-input>
-      <span v-if="myCredentials.password !== myCredentials.confirmPassword">Passwords do not match</span>
+      <span v-if="myCredentials.password !== myCredentials.confirmPassword"
+            style="color: darkred; margin-right: 35px; margin-top: 5px;">Passwords do not match</span>
       </md-field>
       <md-field>
       <label>First Name:</label>

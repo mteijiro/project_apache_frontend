@@ -3,6 +3,7 @@
 
 <template>
   <div>
+    <h1>Login</h1>
     <md-field>
       <label>Username:</label>
       <md-input v-model="myCredentials.username"></md-input>
@@ -11,7 +12,7 @@
       <label>Password:</label>
       <md-input type="password" v-model="myCredentials.password"></md-input>
     </md-field>
-    <p>Our website uses cookies to store your authentication details</p>
+    <p>Our website uses cookies to store your authentication details.</p>
     <md-button class="md-raised md-primary" v-on:click="login()">Submit</md-button>
     <md-button class="md-raised md-primary" v-on:click="getCookie('token')">TestCookie</md-button>
   </div>

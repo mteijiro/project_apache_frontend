@@ -51,6 +51,7 @@
             <md-field>
               <label>Location (Search by Address):</label>
               <md-input id="addressBox"></md-input>
+              <span class="md-helper-text">e.g. Regnbuepladsen 7</span>
             </md-field>
             <md-button class="md-raised" v-on:click="searchAddress(lookupAddress)">Search</md-button>
             <p id="locationDisplay">Please drag the arrow to your location.</p>
