@@ -63,7 +63,6 @@ export default {
         method: 'POST'
       }).then(response => response.json()) // Convert the token response into a JSON object
         .then(JSONresponse => JSON.stringify(JSONresponse)) // Select the token string from the object.
-        .then(resp => alert('Server Response: ' + resp))
     }
   }
 }
