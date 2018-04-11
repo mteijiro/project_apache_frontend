@@ -3,8 +3,8 @@
     <h1>Submit A Complaint</h1>
     <md-steppers v-bind:md-active-step="formSteps[formIndex]" md-linear>
       <md-step v-bind:id="formSteps[0]" v-on:click="formIndex=0" v-bind:md-description="formIndex[0]"
-               v-bind:md-label="formIndex[0]" v-bind:md-done="formIndex > 0">
-        <template v-if="formIndex === 0">
+               v-bind:md-label="formIndex[0]">
+        <!--<template v-if="formIndex === 0">-->
           <template v-if="!checkForToken()">
             <h2>You must be logged in to submit a complaint.</h2>
             <router-link to="Login">You can log in here</router-link>
@@ -13,11 +13,11 @@
             <h2>You are currently logged in as: {{ getCookie ('username') }}</h2>
             <span style="text-align: center;">Press next to continue</span>
           </template>
-        </template>
+        <!--</template>-->
       </md-step>
       <md-step v-bind:id="formSteps[1]" v-on:click="formIndex=1" v-bind:md-label="formIndex[1]"
                v-bind:md-done="newComplaint.category.length > 1">
-        <template v-if="formIndex === 1">
+        <!--<template v-if="formIndex === 1">-->
           <h2 align="left"><u>Category</u></h2>
           <md-field>
             <label>Category</label>
@@ -38,11 +38,11 @@
               </md-option>
             </md-select>
           </md-field>
-        </template>
+        <!--</template>-->
       </md-step>
       <md-step v-bind:id="formSteps[2]" v-on:click="formIndex=2" v-bind:md-label="formIndex[2]"
-               v-bind:md-done="newComplaint.latitude !== 0.0 && newComplaint.longitude !== 0.0">
-        <template v-if="formIndex === 2">
+               v-bind:md-done="mapInteracted === true">
+        <!--<template v-if="formIndex === 2">-->
           <br/>
           <!--<md-field>-->
           <!--<label>Latitude:</label>-->
@@ -59,38 +59,39 @@
             <span class="md-helper-text">e.g. Regnbuepladsen 7</span>
           </md-field>
           <md-button class="md-raised" v-on:click="searchAddress(lookupAddress)">Search</md-button>
+          <md-button class="md-raised" v-on:click="resetMarker()">Reset</md-button>
           <br/>
           <span style="text-align: center;" id="locationDisplay">Please drag the arrow to your location.</span>
           <leaflet-map id="myMap"
                        v-bind:newCoords="{latitude : newComplaint.latitude, longitude : newComplaint.longitude}"
                        v-on:coordsChanged="onDragMapCoords"></leaflet-map>
-        </template>
+        <!--</template>-->
       </md-step>
       <md-step v-bind:id="formSteps[3]" v-on:click="formIndex=3" v-bind:md-label="formIndex[3]"
                v-bind:md-done="formIndex > 3">
-        <template v-if="formIndex === 3">
+        <!--<template v-if="formIndex === 3">-->
           <md-field>
             <label>Comments:</label>
             <md-textarea v-model="newComplaint.comments"></md-textarea>
           </md-field>
-          <md-field>
-            <label>Image</label>
-            <md-file @change="onImageSelected" accept="image/*" placeholder="Upload image file..."/>
-          </md-field>
-          <md-field>
-            <label>Audio</label>
-            <md-file @change="onAudioSelected" accept="audio/*" placeholder="Upload audio file..."/>
-          </md-field>
-        </template>
+          <!--<md-field>-->
+            <!--<label>Image</label>-->
+            <!--<md-file @change="onImageSelected" accept="image/*" placeholder="Upload image file..."/>-->
+          <!--</md-field>-->
+          <!--<md-field>-->
+            <!--<label>Audio</label>-->
+            <!--<md-file @change="onAudioSelected" accept="audio/*" placeholder="Upload audio file..."/>-->
+          <!--</md-field>-->
+        <!--</template>-->
       </md-step>
       <md-step v-bind:id="formSteps[4]" v-on:click="formIndex=4" v-bind:md-label="formIndex[4]">
         <template v-if="formIndex === endFormIndex && returnParty === 'Police'">
-          <h3>Thank you</h3>
+          <h2>Thank you</h2>
           <p>Your complaint has been submitted</p>
           <P>If you require immediate action, please call the police at 114.</P>
         </template>
         <template v-if="formIndex === endFormIndex && returnParty === 'Noise Guard'">
-          <h3>Thank you</h3>
+          <h2>Thank you</h2>
           <p>Thank you for your submission. However we do not accept complaints related to:</p>
           <ul id="NGlist">
             <li>Musical noise from event (no restorations)</li>
@@ -122,7 +123,7 @@
         <md-button class="md-raised md-primary" v-on:click="backButtonPressed()">Back</md-button>
       </template>
       <template v-if="formIndex < endFormIndex - 1 && (getCookie('username')).length > 0">
-        <md-button class="md-raised md-primary" v-on:click="nextButtonPressed()">Next</md-button>
+        <md-button id="nextButton" class="md-raised md-primary" v-on:click="nextButtonPressed()">Next</md-button>
       </template>
       <template v-if="formIndex === endFormIndex - 1">
         <md-button class="md-raised md-primary" v-on:click="submitComplaint(myCredentials, newComplaint)">Submit
@@ -152,8 +153,8 @@ export default {
         password: '',
         category: '',
         sub_category: '',
-        latitude: 0.0,
-        longitude: 0.0,
+        latitude: 55.681078,
+        longitude: 12.565966,
         comments: '',
         imageUP: null,
         audioUP: null
@@ -167,6 +168,7 @@ export default {
         username: '',
         password: ''
       },
+      mapInteracted: false,
       imageUpload: null,
       audioUpload: null,
       formSteps: ['login', 'category', 'location', 'submit', 'done'],
@@ -212,6 +214,7 @@ export default {
       const results = await this.provider.search({query: address})
       this.newComplaint.longitude = results[0].x
       this.newComplaint.latitude = results[0].y
+      this.mapInteracted = true
     },
     // If the category is dealt with by the noise guard, returns true, else returns false
     isNoiseGuard (category) {
@@ -250,6 +253,7 @@ export default {
         if (pos != null) {
           me.newComplaint.latitude = pos.coords.latitude
           me.newComplaint.longitude = pos.coords.longitude
+          me.mapInteracted = true
         }
       })
     },
@@ -263,7 +267,7 @@ export default {
     nextButtonPressed () {
       if (this.formIndex < this.endFormIndex - 1) {
         this.onNoiseGuardSelected()
-        if (this.returnParty === 'Noise Guard') {
+        if (this.returnParty === 'Noise Guard' && this.formIndex >= 1) {
           this.formIndex = 4
         } else {
           this.formIndex = this.formIndex + 1
@@ -275,6 +279,13 @@ export default {
     onDragMapCoords: function (newCoords) {
       this.newComplaint.latitude = newCoords.latCoord
       this.newComplaint.longitude = newCoords.longCoord
+      this.mapInteracted = true
+    },
+    // Update the latitude and longitude values on this vue object based off of the values passed in
+    // Used specifically for the map object.
+    resetMarker: function () {
+      this.newComplaint.latitude = 55.681078
+      this.newComplaint.longitude = 12.565966
     },
     // Prepare image file for submission
     onImageSelected (event) {

@@ -3,7 +3,7 @@
 
 <template>
   <div>
-    <div id="mapid" v-bind="mymap" ></div>
+    <div id="mapid" v-bind="mymap" width="100%"></div>
   </div>
 </template>
 
@@ -47,7 +47,7 @@ export default {
       minZoom: 13,
       maxZoom: 18,
       maxBounds: [[55.71, 12.50], [55.65, 12.66]]
-    }).setView([55.679479, 12.569470], 13)
+    }).setView([55.681078, 12.565966], 13)
     L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
       attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
       '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
@@ -55,7 +55,7 @@ export default {
       id: 'mapbox.streets'
     }).addTo(mymap)
 
-    this.myMarker = L.marker([55.679479, 12.569470], {draggable: true}).addTo(mymap)
+    this.myMarker = L.marker([55.681078, 12.565966], {draggable: true}).addTo(mymap)
     // .bindPopup('<b>Location</b><br />Drag me to your location.').openPopup()
     var outer = this
     this.myMarker.on('dragend', function (e) {
@@ -86,5 +86,5 @@ export default {
 </script>
 
 <style scoped>
-  #mapid { display: block; margin-left: auto; margin-right: auto; width: 40vw; height: 50vh;}
+  #mapid { display: block; margin-left: auto; margin-right: auto; width: 100vh; height: 50vh;}
 </style>

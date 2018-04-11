@@ -13,7 +13,14 @@
         <label>Password:</label>
         <md-input type="password" v-model="myCredentials.password"></md-input>
       </md-field>
-      <p>Our website uses cookies to store your authentication details.</p>
+      <md-checkbox class="md-primary" v-model="rememberMe"></md-checkbox>
+      <span>Remember Me</span>
+      <br />
+      <span>Your credentials will be saved for 7 days or until you log out</span>
+      <br />
+      <br />
+      <span>Our website uses cookies to store your authentication details.</span>
+      <br />
       <md-button class="md-raised md-primary" v-on:click="login()">Log In</md-button>
       <p id="errorMsg" v-if="invalidToken">Invalid username or password, please try again</p>
     </template>
@@ -38,7 +45,8 @@ export default {
         token: ''
       },
       invalidToken: false,
-      loggedIn: false
+      loggedIn: false,
+      rememberMe: true
     }
   },
   methods: {
@@ -55,7 +63,7 @@ export default {
         parScope.invalidToken = true
       }
       // console.log(dbInteract)
-      dbInteract.methods.postToGetToken(this.$api, this.myCredentials, onSucc, onFail, this)
+      dbInteract.methods.postToGetToken(this.$api, this.myCredentials, onSucc, onFail, this, this.rememberMe)
     },
     logout () {
       dbInteract.methods.clearAllCookies()
@@ -103,7 +111,6 @@ export default {
 
 <style scoped>
   #errorMsg {
-    color:red;
+    color: red;
   }
-
 </style>

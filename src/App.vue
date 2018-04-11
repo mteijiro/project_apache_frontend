@@ -22,7 +22,6 @@
 
         <md-app-content>
           <br/>
-          <!--<img src="./assets/titleImageSmall.png">-->
           <router-view/>
         </md-app-content>
       </md-app>

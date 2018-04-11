@@ -28,6 +28,11 @@
         <label>Last Name:</label>
         <md-input type="text" v-model="myCredentials.lastName"></md-input>
       </md-field>
+      <md-checkbox class="md-primary" v-model="rememberMe"></md-checkbox>
+      <span>Remember Me</span>
+      <br />
+      <span>Your credentials will be saved for 7 days or until you log out</span>
+      <br />
       <md-button class="md-raised md-primary" type="button" value="submit" v-on:click="createUser(myCredentials)">Create</md-button>
       <p class="err" v-if="invalidCreation">{{ errorMessage }}. The username may be taken. Please try again with a different username or at a later date</p>
       <p class="err" v-if="invalidToken">Error: invalid token</p>
@@ -52,7 +57,8 @@ export default {
       loggedIn: false,
       errorMessage: '',
       invalidToken: false,
-      invalidCreation: false
+      invalidCreation: false,
+      rememberMe: true
     }
   },
   methods: {
@@ -75,7 +81,7 @@ export default {
           console.log(error)
           parScope.invalidToken = true
         }
-        Up1Scope.postToGetToken(parScope.$api, credentials, onSucc, onFail, parScope)
+        Up1Scope.postToGetToken(parScope.$api, credentials, onSucc, onFail, parScope, parScope.rememberMe)
         // this.login(credentials, parScope)
       }
       var onFail = function (error, parScope) {

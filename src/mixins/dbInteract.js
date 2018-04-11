@@ -129,7 +129,7 @@ export const dbInteract = {
           }
         })
     },
-    postToGetToken (apiLoc, credentials, onSucc, onFail, parentScope) {
+    postToGetToken (apiLoc, credentials, onSucc, onFail, parentScope, rememberMe) {
       console.log(credentials)
       var credentialsForm = this.compileCredentials(credentials)
       fetch(apiLoc + '/get-token/', {
@@ -143,8 +143,16 @@ export const dbInteract = {
           console.log(response)
           credentials.token = response
           this.clearAllCookies()
-          document.cookie = 'username=' + credentials.username
-          document.cookie = 'token=' + response
+          if (parentScope.rememberMe) {
+            const expireDate = new Date(Date.now())
+            expireDate.setDate(expireDate.getDate() + 7)
+            const expireDateString = expireDate.toUTCString()
+            document.cookie = 'username=' + credentials.username + '; expires=' + expireDateString + ';'
+            document.cookie = 'token=' + response + '; expires=' + expireDateString + ';'
+          } else {
+            document.cookie = 'username=' + credentials.username
+            document.cookie = 'token=' + response
+          }
           if (typeof onSucc === 'function') {
             onSucc(response, parentScope)
           }
