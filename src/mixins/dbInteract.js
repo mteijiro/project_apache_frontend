@@ -109,6 +109,7 @@ export const dbInteract = {
     postToComplaints (apiLoc, newComplaintData, onSucc, onFail, parentScope) {
       const complaintForm = this.compileComplaint(newComplaintData)
       var myAuth = 'Token ' + JSON.parse(this.getCookie('token'))
+      console.log(myAuth)
       fetch(apiLoc + '/complaints/', {
         mode: 'cors',
         headers: {
@@ -160,6 +161,12 @@ export const dbInteract = {
     clearAllCookies () {
       this.deleteCookie('token')
       this.deleteCookie('username')
+    },
+    handleErrors (response) {
+      if (!response.ok) {
+        throw Error(response.statusText)
+      }
+      return response
     }
   },
   created () {
