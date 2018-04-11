@@ -18,12 +18,23 @@
       <md-step v-bind:id="formSteps[1]" v-on:click="formIndex=1" v-bind:md-label="formIndex[1]"
                v-bind:md-done="newComplaint.category.length > 1">
         <template v-if="formIndex === 1">
+          <h2 align="left"><u>Category</u></h2>
           <md-field>
             <label>Category</label>
             <md-select v-model="newComplaint.category" name="category" id="category">
               <md-option disabled value="">Select Category</md-option>
               <md-option v-for="category in categories" v-bind:key="category.key" v-bind:value="category.value">
                 {{ category.value }}
+              </md-option>
+            </md-select>
+          </md-field>
+          <h2 align="left"><u>Sub Category</u></h2>
+          <md-field>
+            <label>Sub-category</label>
+            <md-select v-model="newComplaint.sub_category" name="category" id="category">
+              <md-option disabled value="">Select Noise Type</md-option>
+              <md-option v-for="sub_category in sub_categories" v-bind:key="sub_category.key" v-bind:value="sub_category.value">
+                {{ sub_category.value }}
               </md-option>
             </md-select>
           </md-field>
@@ -48,6 +59,7 @@
             <span class="md-helper-text">e.g. Regnbuepladsen 7</span>
           </md-field>
           <md-button class="md-raised" v-on:click="searchAddress(lookupAddress)">Search</md-button>
+          <br/>
           <span style="text-align: center;" id="locationDisplay">Please drag the arrow to your location.</span>
           <leaflet-map id="myMap"
                        v-bind:newCoords="{latitude : newComplaint.latitude, longitude : newComplaint.longitude}"
@@ -139,7 +151,7 @@ export default {
         username: '',
         password: '',
         category: '',
-        severity: '',
+        sub_category: '',
         latitude: 0.0,
         longitude: 0.0,
         comments: '',
@@ -175,6 +187,20 @@ export default {
           key: 4,
           value: 'Construction'
         }],
+      sub_categories: [
+        {
+          key: 1,
+          value: 'Loud Music/Party'
+        },
+        {
+          key: 2,
+          value: 'Loud Talking/Shouting'
+        },
+        {
+          key: 3,
+          value: 'Banging/Pounding'
+        }
+      ],
       noiseGuardCategories: ['Bar/Restaurant', 'Construction']
     }
   },

@@ -30,8 +30,8 @@ export const dbInteract = {
     },
     compileComplaint (newComplaint) {
       const complaintForm = new FormData()
-      complaintForm.append('severity', newComplaint.severity)
       complaintForm.append('category', newComplaint.category)
+      complaintForm.append('sub_category', newComplaint.sub_category)
       complaintForm.append('latitude', String(newComplaint.latitude))
       complaintForm.append('longitude', String(newComplaint.longitude))
       complaintForm.append('comments', newComplaint.comments)

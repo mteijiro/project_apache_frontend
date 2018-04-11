@@ -10,12 +10,12 @@
             <span id="loginName" v-if="username.length > 0">Logged In: {{ username }}</span>
           </div>
           <div class="md-toolbar-row">
-            <md-tabs class="md-primary" md-alignment="centered">
+            <md-tabs class="md-primary" md-alignment="centered" md-sync-route>
               <md-tab id="tab-menu" md-label="Menu" to="/"></md-tab>
-              <md-tab id="tab-submit" md-label="Submit A Complaint" to="SubmitAComplaint"></md-tab>
-              <md-tab id="tab-create" md-label="Register" to="CreateAUser"></md-tab>
-              <md-tab id="tab-about" md-label="About" to="About"></md-tab>
-              <md-tab id="tab-login" v-bind:md-label="accountTabLabel" to="Login"></md-tab>
+              <md-tab id="tab-submit" md-label="Submit A Complaint" to="/SubmitAComplaint"></md-tab>
+              <md-tab id="tab-create" md-label="Register" to="/CreateAUser"></md-tab>
+              <md-tab id="tab-about" md-label="About" to="/About"></md-tab>
+              <md-tab id="tab-login" v-bind:md-label="accountTabLabel" to="/Login"></md-tab>
             </md-tabs>
           </div>
         </md-app-toolbar>

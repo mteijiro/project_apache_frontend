@@ -1,11 +1,11 @@
 <template>
   <div>
     <h1>Register</h1>
-    <template v-if="checkForToken()">
+    <template v-if="this.loggedIn">
       <h2>Please log out before creating a new account</h2>
-      <router-link to="Login">Log out here</router-link>
+      <md-button class="md-raised md-primary" v-on:click="logout()">Log Out</md-button>
     </template>
-    <form v-if="!checkForToken()">
+    <form v-if="this.loggedIn">
       <md-field>
         <label>Username:</label>
         <md-input type="text" v-model="myCredentials.username"></md-input>
@@ -49,6 +49,7 @@ export default {
         firstName: '',
         lastName: ''
       },
+      loggedIn: false,
       errorMessage: '',
       invalidToken: false,
       invalidCreation: false
@@ -67,7 +68,8 @@ export default {
         var onSucc = function (response, parScope) {
           console.log('Complaint Success')
           parScope.invalidToken = false
-          parScope.$router.push('/')
+          location.reload(true)
+          parScope.$router.push('Login')
         }
         var onFail = function (error, parScope) {
           console.log(error)
@@ -108,7 +110,18 @@ export default {
       } else {
         return false
       }
+    },
+    logout () {
+      dbInteract.methods.clearAllCookies()
+      this.loggedIn = false
+      location.reload(true)
     }
+  },
+  mounted () {
+    this.loggedIn = this.checkForToken()
+  },
+  updated () {
+    this.loggedIn = this.checkForToken()
   }
 }
 </script>

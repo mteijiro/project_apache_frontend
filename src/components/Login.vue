@@ -48,6 +48,7 @@ export default {
         parScope.invalidToken = false
         parScope.loggedIn = true
         parScope.$router.push('Login')
+        location.reload(true)
       }
       var onFail = function (error, parScope) {
         console.log(error)
@@ -59,6 +60,7 @@ export default {
     logout () {
       dbInteract.methods.clearAllCookies()
       this.loggedIn = false
+      location.reload(true)
     },
     getCookie (cname) {
       var name = cname + '='
