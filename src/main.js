@@ -18,7 +18,7 @@ var config = {
   localApi: 'http://localhost:8000'
 }
 
-Vue.prototype.$api = config.localApi
+Vue.prototype.$api = config.api
 
 /* eslint-disable no-new */
 new Vue({
