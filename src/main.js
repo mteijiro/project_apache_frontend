@@ -14,7 +14,7 @@ Vue.use(VueResource)
 Vue.config.productionTip = false
 
 var config = {
-  api: 'http://18.197.28.234:8000',
+  api: 'http://18.195.234.213:8000',
   localApi: 'http://localhost:8000'
 }
 
