@@ -113,7 +113,7 @@
         var deg_long_per_m = range / (111111 * Math.cos(latitude)) // Deviation in degrees
 
         var locationArray = [latitude - deg_lat_per_m, latitude + deg_lat_per_m,
-                                longitude - deg_long_per_m, longitude + deg_long_per_m]
+          longitude - deg_long_per_m, longitude + deg_long_per_m]
 
         return locationArray
       },
@@ -153,17 +153,17 @@
       onDownloadClicked() {
 
         var startDateTime = this.querySet.startDatetime.getFullYear() + "-" +
-                            this.querySet.startDatetime.getMonth() + "-" +
-                            this.querySet.startDatetime.getDate() + "+00:00:00"
+          this.querySet.startDatetime.getMonth() + "-" +
+          this.querySet.startDatetime.getDate() + "+00:00:00"
         var endDateTime = this.querySet.endDatetime.getFullYear() + "-" +
-                          this.querySet.endDatetime.getMonth() + "-" +
-                          this.querySet.endDatetime.getDate() + "+23:59:59"
+          this.querySet.endDatetime.getMonth() + "-" +
+          this.querySet.endDatetime.getDate() + "+23:59:59"
 
         var locationArray = convertLocation(this.querySet.location, this.querySet.range)
 
         var queryString = buildQuery(this.querySet.category, this.querySet.sub_category,
-                                      locationArray[0], locationArray[1], locationArray[2], locationArray[3],
-                                      startDateTime, endDateTime)
+          locationArray[0], locationArray[1], locationArray[2], locationArray[3],
+          startDateTime, endDateTime)
 
         // Reset form
         onResetClicked()

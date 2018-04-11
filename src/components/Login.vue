@@ -25,8 +25,11 @@
 </template>
 
 <script>
+import { dbInteract } from '../../src/mixins/dbInteract'
+
 export default {
   name: 'Login',
+  mixins: [dbInteract],
   data () {
     return {
       myCredentials: {
@@ -39,42 +42,22 @@ export default {
     }
   },
   methods: {
-    // Compile credentials into a formData object for a post submission
-    compileCredentials (myCredentials) {
-      const credentialsForm = new FormData()
-      credentialsForm.append('username', myCredentials.username)
-      credentialsForm.append('password', myCredentials.password)
-      return credentialsForm
-    },
     login () {
-      var credentialsForm = this.compileCredentials(this.myCredentials)
-      fetch(this.$api + '/get-token/', {
-        mode: 'cors',
-        body: credentialsForm,
-        method: 'POST'
-      }).then(this.handleErrors)
-        .then(response => response.json()) // Convert the token response into a JSON object
-        .then(JSONresponse => JSON.stringify(JSONresponse.token)) // Select the token string from the object.
-        .then(token => {
-          this.myCredentials.token = token
-          console.log(token)
-          document.cookie = 'username=' + this.myCredentials.username
-          document.cookie = 'token=' + token
-        })
-        .then(response => {
-          console.log('Complaint Success')
-          this.invalidToken = false
-          this.loggedIn = true
-          this.$router.push('Login')
-        })
-        .catch(error => {
-          console.log(error)
-          this.invalidToken = true
-        })
+      var onSucc = function (response, parScope) {
+        console.log('Complaint Success')
+        parScope.invalidToken = false
+        parScope.loggedIn = true
+        parScope.$router.push('Login')
+      }
+      var onFail = function (error, parScope) {
+        console.log(error)
+        parScope.invalidToken = true
+      }
+      // console.log(dbInteract)
+      dbInteract.methods.postToGetToken(this.$api, this.myCredentials, onSucc, onFail, this)
     },
     logout () {
-      this.deleteCookie('username')
-      this.deleteCookie('token')
+      dbInteract.methods.clearAllCookies()
       this.loggedIn = false
     },
     getCookie (cname) {
@@ -95,12 +78,6 @@ export default {
     },
     deleteCookie (name) {
       document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT;'
-    },
-    handleErrors (response) {
-      if (!response.ok) {
-        throw Error(response.statusText)
-      }
-      return response
     },
     checkForToken () {
       // this.getCookie('username')

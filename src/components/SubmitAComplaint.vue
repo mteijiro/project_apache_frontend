@@ -1,122 +1,122 @@
 <template>
   <div class="greetings">
     <h1>Submit A Complaint</h1>
-      <md-steppers v-bind:md-active-step="formSteps[formIndex]" md-linear>
-        <md-step v-bind:id="formSteps[0]" v-on:click="formIndex=0" v-bind:md-description="formIndex[0]"
-                 v-bind:md-label="formIndex[0]" v-bind:md-done="formIndex > 0">
-          <template v-if="formIndex === 0">
-            <template v-if="!checkForToken()">
-              <h2>You must be logged in to submit a complaint.</h2>
-              <router-link to="Login">You can log in here</router-link>
-            </template>
-            <template v-if="checkForToken()">
-              <h2>You are currently logged in as: {{ getCookie ('username') }}</h2>
-              <span style="text-align: center;">Press next to continue</span>
-            </template>
+    <md-steppers v-bind:md-active-step="formSteps[formIndex]" md-linear>
+      <md-step v-bind:id="formSteps[0]" v-on:click="formIndex=0" v-bind:md-description="formIndex[0]"
+               v-bind:md-label="formIndex[0]" v-bind:md-done="formIndex > 0">
+        <template v-if="formIndex === 0">
+          <template v-if="!checkForToken()">
+            <h2>You must be logged in to submit a complaint.</h2>
+            <router-link to="Login">You can log in here</router-link>
           </template>
-        </md-step>
-        <md-step v-bind:id="formSteps[1]" v-on:click="formIndex=1" v-bind:md-label="formIndex[1]"
-                 v-bind:md-done="newComplaint.category.length > 1">
-          <template v-if="formIndex === 1">
-            <md-field>
-              <label>Category</label>
-              <md-select v-model="newComplaint.category" name="category" id="category">
-                <md-option disabled value="">Select Category</md-option>
-                <md-option v-for="category in categories" v-bind:key="category.key" v-bind:value="category.value">
-                  {{ category.value }}
-                </md-option>
-              </md-select>
-            </md-field>
+          <template v-if="checkForToken()">
+            <h2>You are currently logged in as: {{ getCookie ('username') }}</h2>
+            <span style="text-align: center;">Press next to continue</span>
           </template>
-        </md-step>
-        <md-step v-bind:id="formSteps[2]" v-on:click="formIndex=2" v-bind:md-label="formIndex[2]"
-                 v-bind:md-done="newComplaint.latitude !== 0.0 && newComplaint.longitude !== 0.0">
-          <template v-if="formIndex === 2">
-            <br/>
-            <!--<md-field>-->
-            <!--<label>Latitude:</label>-->
-            <!--<md-input v-model="newComplaint.latitude"></md-input>-->
-            <!--</md-field>-->
-            <!--<md-field>-->
-            <!--<label>Longitude:</label>-->
-            <!--<md-input v-model="newComplaint.longitude"></md-input>-->
-            <!--</md-field>-->
-            <!--<md-button class="md-raised" v-on:click="getUserLocation(this)">Auto Detect My Location</md-button>-->
-            <md-field>
-              <label>Location (Search by Address):</label>
-              <md-input id="addressBox"></md-input>
-              <span class="md-helper-text">e.g. Regnbuepladsen 7</span>
-            </md-field>
-            <md-button class="md-raised" v-on:click="searchAddress(lookupAddress)">Search</md-button>
-            <span style="text-align: center;" id="locationDisplay">Please drag the arrow to your location.</span>
-            <leaflet-map id="myMap"
-                         v-bind:newCoords="{latitude : newComplaint.latitude, longitude : newComplaint.longitude}"
-                         v-on:coordsChanged="onDragMapCoords"></leaflet-map>
-          </template>
-        </md-step>
-        <md-step v-bind:id="formSteps[3]" v-on:click="formIndex=3" v-bind:md-label="formIndex[3]"
-                 v-bind:md-done="formIndex > 3">
-          <template v-if="formIndex === 3">
-            <md-field>
-              <label>Comments:</label>
-              <md-textarea v-model="newComplaint.comments"></md-textarea>
-            </md-field>
-            <md-field>
-              <label>Image</label>
-              <md-file @change="onImageSelected" accept="image/*" placeholder="Upload image file..."/>
-            </md-field>
-            <md-field>
-              <label>Audio</label>
-              <md-file @change="onAudioSelected" accept="audio/*" placeholder="Upload audio file..."/>
-            </md-field>
-          </template>
-        </md-step>
-        <md-step v-bind:id="formSteps[4]" v-on:click="formIndex=4" v-bind:md-label="formIndex[4]">
-          <template v-if="formIndex === endFormIndex && returnParty === 'Police'">
-            <h3>Thank you</h3>
-            <p>Your complaint has been submitted</p>
-            <P>If you require immediate action, please call the police at 114.</P>
-          </template>
-          <template v-if="formIndex === endFormIndex && returnParty === 'Noise Guard'">
-            <h3>Thank you</h3>
-            <p>Thank you for your submission. However we do not accept complaints related to:</p>
-            <ul id="NGlist">
-              <li>Musical noise from event (no restorations)</li>
-              <li>Music noise from restaurants</li>
-              <li>Music noise due to open doors / windows</li>
-              <li>Noise from construction site (not Metro)</li>
-              <li>Noise from facade renovation</li>
-              <li>Noise from supply (construction site)</li>
-              <li>Noise from Goods Delivery (Retail)</li>
-              <li>Noise from ventilation or similar</li>
-              <li>Noisy work outside allowed time (Construction site)...</li>
-              <li>Other Noise Generations (No Construction Site)</li>
-            </ul>
+        </template>
+      </md-step>
+      <md-step v-bind:id="formSteps[1]" v-on:click="formIndex=1" v-bind:md-label="formIndex[1]"
+               v-bind:md-done="newComplaint.category.length > 1">
+        <template v-if="formIndex === 1">
+          <md-field>
+            <label>Category</label>
+            <md-select v-model="newComplaint.category" name="category" id="category">
+              <md-option disabled value="">Select Category</md-option>
+              <md-option v-for="category in categories" v-bind:key="category.key" v-bind:value="category.value">
+                {{ category.value }}
+              </md-option>
+            </md-select>
+          </md-field>
+        </template>
+      </md-step>
+      <md-step v-bind:id="formSteps[2]" v-on:click="formIndex=2" v-bind:md-label="formIndex[2]"
+               v-bind:md-done="newComplaint.latitude !== 0.0 && newComplaint.longitude !== 0.0">
+        <template v-if="formIndex === 2">
+          <br/>
+          <!--<md-field>-->
+          <!--<label>Latitude:</label>-->
+          <!--<md-input v-model="newComplaint.latitude"></md-input>-->
+          <!--</md-field>-->
+          <!--<md-field>-->
+          <!--<label>Longitude:</label>-->
+          <!--<md-input v-model="newComplaint.longitude"></md-input>-->
+          <!--</md-field>-->
+          <!--<md-button class="md-raised" v-on:click="getUserLocation(this)">Auto Detect My Location</md-button>-->
+          <md-field>
+            <label>Location (Search by Address):</label>
+            <md-input id="addressBox"></md-input>
+            <span class="md-helper-text">e.g. Regnbuepladsen 7</span>
+          </md-field>
+          <md-button class="md-raised" v-on:click="searchAddress(lookupAddress)">Search</md-button>
+          <span style="text-align: center;" id="locationDisplay">Please drag the arrow to your location.</span>
+          <leaflet-map id="myMap"
+                       v-bind:newCoords="{latitude : newComplaint.latitude, longitude : newComplaint.longitude}"
+                       v-on:coordsChanged="onDragMapCoords"></leaflet-map>
+        </template>
+      </md-step>
+      <md-step v-bind:id="formSteps[3]" v-on:click="formIndex=3" v-bind:md-label="formIndex[3]"
+               v-bind:md-done="formIndex > 3">
+        <template v-if="formIndex === 3">
+          <md-field>
+            <label>Comments:</label>
+            <md-textarea v-model="newComplaint.comments"></md-textarea>
+          </md-field>
+          <md-field>
+            <label>Image</label>
+            <md-file @change="onImageSelected" accept="image/*" placeholder="Upload image file..."/>
+          </md-field>
+          <md-field>
+            <label>Audio</label>
+            <md-file @change="onAudioSelected" accept="audio/*" placeholder="Upload audio file..."/>
+          </md-field>
+        </template>
+      </md-step>
+      <md-step v-bind:id="formSteps[4]" v-on:click="formIndex=4" v-bind:md-label="formIndex[4]">
+        <template v-if="formIndex === endFormIndex && returnParty === 'Police'">
+          <h3>Thank you</h3>
+          <p>Your complaint has been submitted</p>
+          <P>If you require immediate action, please call the police at 114.</P>
+        </template>
+        <template v-if="formIndex === endFormIndex && returnParty === 'Noise Guard'">
+          <h3>Thank you</h3>
+          <p>Thank you for your submission. However we do not accept complaints related to:</p>
+          <ul id="NGlist">
+            <li>Musical noise from event (no restorations)</li>
+            <li>Music noise from restaurants</li>
+            <li>Music noise due to open doors / windows</li>
+            <li>Noise from construction site (not Metro)</li>
+            <li>Noise from facade renovation</li>
+            <li>Noise from supply (construction site)</li>
+            <li>Noise from Goods Delivery (Retail)</li>
+            <li>Noise from ventilation or similar</li>
+            <li>Noisy work outside allowed time (Construction site)...</li>
+            <li>Other Noise Generations (No Construction Site)</li>
+          </ul>
 
-            <p>If you would like to submit a complaint about noise being generated by one of these sources, please visit
-              the København Kommune’s noise complaint form via this link:
-               <a href="https://www.kk.dk/støj">https://www.kk.dk/støj</a>
-            </p>
-            <p>If you would like to submit a complaint about noise generated by cafes, restaurants, events or other
-              venues, please contact the Noise Unit or Noise Guard.</p>
-            <p>Noise Unit: Man-Tors 9:00-15:00. Tel. 26 86 58 27</p>
-            <p>Noise Guard: Tors 19:00-01:00, Fre-Lør 21:00-03:00. Tel. 33 66 25 85</p>
-          </template>
-        </md-step>
-      </md-steppers>
-      <br/>
-      <div>
-        <template v-if="formIndex > 0 && formIndex < endFormIndex">
-          <md-button class="md-raised md-primary" v-on:click="backButtonPressed()">Back</md-button>
+          <p>If you would like to submit a complaint about noise being generated by one of these sources, please visit
+            the København Kommune’s noise complaint form via this link:
+            <a href="https://www.kk.dk/støj">https://www.kk.dk/støj</a>
+          </p>
+          <p>If you would like to submit a complaint about noise generated by cafes, restaurants, events or other
+            venues, please contact the Noise Unit or Noise Guard.</p>
+          <p>Noise Unit: Man-Tors 9:00-15:00. Tel. 26 86 58 27</p>
+          <p>Noise Guard: Tors 19:00-01:00, Fre-Lør 21:00-03:00. Tel. 33 66 25 85</p>
         </template>
-        <template v-if="formIndex < endFormIndex - 1 && (getCookie('username')).length > 0">
-          <md-button class="md-raised md-primary" v-on:click="nextButtonPressed()">Next</md-button>
-        </template>
-        <template v-if="formIndex === endFormIndex - 1">
-          <md-button class="md-raised md-primary" v-on:click="submitComplaint(myCredentials, newComplaint)">Submit
-          </md-button>
-        </template>
-      </div>
+      </md-step>
+    </md-steppers>
+    <br/>
+    <div>
+      <template v-if="formIndex > 0 && formIndex < endFormIndex">
+        <md-button class="md-raised md-primary" v-on:click="backButtonPressed()">Back</md-button>
+      </template>
+      <template v-if="formIndex < endFormIndex - 1 && (getCookie('username')).length > 0">
+        <md-button class="md-raised md-primary" v-on:click="nextButtonPressed()">Next</md-button>
+      </template>
+      <template v-if="formIndex === endFormIndex - 1">
+        <md-button class="md-raised md-primary" v-on:click="submitComplaint(myCredentials, newComplaint)">Submit
+        </md-button>
+      </template>
+    </div>
   </div>
 </template>
 
@@ -124,10 +124,12 @@
 // imports
 import LeafletMap from './LeafletMap.vue'
 import {OpenStreetMapProvider} from 'leaflet-geosearch'
+import { dbInteract } from '../../src/mixins/dbInteract'
 
 export default {
   name: 'SubmitAComplaint',
   props: {},
+  mixins: [dbInteract],
   components: {
     'leaflet-map': LeafletMap
   },
@@ -265,63 +267,14 @@ export default {
         this.formIndex = this.formIndex + 1
       }
     },
-    // Compile credentials into a formData object for a post submission
-    compileCredentials (myCredentials) {
-      const credentialsForm = new FormData()
-      credentialsForm.append('username', myCredentials.username)
-      credentialsForm.append('password', myCredentials.password)
-      return credentialsForm
-    },
-    // Compile a complaint into a formData object for a post submission
-    compileComplaint (newComplaint) {
-      const complaintForm = new FormData()
-      complaintForm.append('severity', newComplaint.severity)
-      complaintForm.append('category', newComplaint.category)
-      complaintForm.append('latitude', String(newComplaint.latitude))
-      complaintForm.append('longitude', String(newComplaint.longitude))
-      complaintForm.append('comments', newComplaint.comments)
-      if (newComplaint.imageUP != null) {
-        complaintForm.append('image', newComplaint.imageUP, newComplaint.imageUP.name)
-      }
-      if (newComplaint.audioUP != null) {
-        complaintForm.append('audio', newComplaint.audioUP, newComplaint.audioUP.name)
-      }
-      return complaintForm
-    },
     sendToDatabase (myCredentials, newComplaint) {
-      // const credentialsForm = this.compileCredentials(myCredentials)
-      const complaintForm = this.compileComplaint(newComplaint)
-      // fetch(this.$api + '/get-token/', {
-      //   mode: 'cors',
-      //   body: credentialsForm,
-      //   method: 'POST'
-      // }).then(response => response.json()) // Convert the token response into a JSON object
-      //   .then(JSONresponse => JSON.stringify(JSONresponse.token)) // Select the token string from the object.
-      //   .then(tokenString => 'Token ' + JSON.parse(tokenString)) // Remove string quotations and concatenate with authorization syntax
-      //   .then(resp4 => {
-      // alert(resp4) // (For debugging purposes) print out the token.
-      var myAuth = 'Token ' + JSON.parse(this.getCookie('token'))
-      fetch(this.$api + '/complaints/', {
-        mode: 'cors',
-        headers: {
-          'Authorization': myAuth
-        },
-        body: complaintForm,
-        method: 'POST'
-      }).then(this.handleErrors)
-        .then(response => {
-          console.log('Complaint Success')
-        })
-        .catch(error => {
-          console.log(error)
-        })
-      // })
-    },
-    handleErrors (response) {
-      if (!response.ok) {
-        throw Error(response.statusText)
+      const onSucc = function (response, parScope) {
+        console.log('Complaint Success')
       }
-      return response
+      const onFail = function (error, parScope) {
+        console.log(error)
+      }
+      dbInteract.methods.postToComplaints(this.$api, newComplaint, onSucc, onFail, this)
     },
     getCookie (cname) {
       var name = cname + '='
