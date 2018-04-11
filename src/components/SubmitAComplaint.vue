@@ -11,7 +11,7 @@
             </template>
             <template v-if="checkForToken()">
               <h2>You are currently logged in as: {{ getCookie ('username') }}</h2>
-              <p>Press next to continue</p>
+              <span style="text-align: center;">Press next to continue</span>
             </template>
           </template>
         </md-step>
@@ -48,7 +48,7 @@
               <span class="md-helper-text">e.g. Regnbuepladsen 7</span>
             </md-field>
             <md-button class="md-raised" v-on:click="searchAddress(lookupAddress)">Search</md-button>
-            <p id="locationDisplay">Please drag the arrow to your location.</p>
+            <span style="text-align: center;" id="locationDisplay">Please drag the arrow to your location.</span>
             <leaflet-map id="myMap"
                          v-bind:newCoords="{latitude : newComplaint.latitude, longitude : newComplaint.longitude}"
                          v-on:coordsChanged="onDragMapCoords"></leaflet-map>
@@ -79,7 +79,7 @@
           </template>
           <template v-if="formIndex === endFormIndex && returnParty === 'Noise Guard'">
             <h3>Thank you</h3>
-            <p>Thank you for your complaint, however we do not accept complaints related to:</p>
+            <p>Thank you for your submission. However we do not accept complaints related to:</p>
             <ul id="NGlist">
               <li>Musical noise from event (no restorations)</li>
               <li>Music noise from restaurants</li>
