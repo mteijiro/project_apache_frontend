@@ -5,7 +5,7 @@
       <h2>Please log out before creating a new account</h2>
       <md-button class="md-raised md-primary" v-on:click="logout()">Log Out</md-button>
     </template>
-    <form v-if="this.loggedIn">
+    <form v-if="!this.loggedIn">
       <md-field>
         <label>Username:</label>
         <md-input type="text" v-model="myCredentials.username"></md-input>

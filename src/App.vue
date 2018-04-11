@@ -139,7 +139,7 @@
     -moz-osx-font-smoothing: grayscale;
     text-align: center;
     color: #2c3e50;
-    margin: .5vh .5vw;
+    padding: .5vh .5vw;
   }
 
   .md-steppers-navigation {
