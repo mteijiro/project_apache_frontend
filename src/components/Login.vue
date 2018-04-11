@@ -3,7 +3,7 @@
 
 <template>
   <div>
-    <h1>Login</h1>
+    <h1>Account</h1>
     <template v-if="!loggedIn">
       <md-field>
         <label>Username:</label>
@@ -18,6 +18,7 @@
       <p id="errorMsg" v-if="invalidToken">Invalid username or password, please try again</p>
     </template>
     <template v-if="loggedIn">
+      <h1>You are logged in as {{getCookie('username')}}</h1>
       <md-button class="md-raised md-primary" v-on:click="logout()">Log Out</md-button>
     </template>
   </div>
@@ -63,7 +64,8 @@ export default {
         .then(response => {
           console.log('Complaint Success')
           this.invalidToken = false
-          this.$router.push('/')
+          this.loggedIn = true
+          this.$router.push('Login')
         })
         .catch(error => {
           console.log(error)
@@ -112,6 +114,9 @@ export default {
     }
   },
   mounted () {
+    this.loggedIn = this.checkForToken()
+  },
+  updated () {
     this.loggedIn = this.checkForToken()
   }
 }

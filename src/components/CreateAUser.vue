@@ -105,7 +105,7 @@ export default {
       }).then(this.handleErrors)
         .then(response => response.json()) // Convert the token response into a JSON object
         .then(JSONresponse => JSON.stringify(JSONresponse.token)) // Select the token string from the object.
-        .then(token => { this.myCredentials.token = token; console.log(token); document.cookie = 'username=' + this.myCredentials.username; document.cookie = 'token=' + token })
+        .then(token => { this.myCredentials.token = token; console.log(token); this.clearAllCookies(); document.cookie = 'username=' + this.myCredentials.username; document.cookie = 'token=' + token })
         .then(response => {
           console.log('Complaint Success')
           this.invalidToken = false
@@ -147,6 +147,13 @@ export default {
       } else {
         return false
       }
+    },
+    deleteCookie (name) {
+      document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT;'
+    },
+    clearAllCookies () {
+      this.deleteCookie('token')
+      this.deleteCookie('username')
     }
   }
 }
