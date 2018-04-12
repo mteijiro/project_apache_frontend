@@ -147,11 +147,11 @@ export const dbInteract = {
             const expireDate = new Date(Date.now())
             expireDate.setDate(expireDate.getDate() + 7)
             const expireDateString = expireDate.toUTCString()
-            document.cookie = 'username=' + credentials.username + '; expires=' + expireDateString + ';'
-            document.cookie = 'token=' + response + '; expires=' + expireDateString + ';'
+            document.cookie = 'username=' + credentials.username + '; expires=' + expireDateString + '; domain=' + location.hostname + '; path=/'
+            document.cookie = 'token=' + response + '; expires=' + expireDateString + '; domain=' + location.hostname + '; path=/'
           } else {
-            document.cookie = 'username=' + credentials.username
-            document.cookie = 'token=' + response
+            document.cookie = 'username=' + credentials.username + '; domain=' + location.hostname + '; path=/'
+            document.cookie = 'token=' + response + '; domain=' + location.hostname + '; path=/'
           }
           if (typeof onSucc === 'function') {
             onSucc(response, parentScope)

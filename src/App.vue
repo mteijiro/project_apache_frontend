@@ -165,6 +165,10 @@
     }
   }
 
+  .md-input {
+    font-size: 16px;
+  }
+
 </style>
 
 <style lang="scss" scoped>
@@ -188,6 +192,10 @@
 
   .md-toolbar.md-theme-default.md-primary {
     background-color: #008a83 !important;
+  }
+
+  .md-input {
+    font-size: 16px;
   }
 
 </style>

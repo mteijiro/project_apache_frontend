@@ -10,7 +10,7 @@
     <p>Christopher Cyr, Brent Reissman, Michael Taylor and Chad Underhill,
       from the Worcester Polytechnic Institute under the guidance and supervision of Centerleader
       Marianne Spang Bech from Miljøpunkt Indre By and Christianshavn</p>
-    <img alt="WPIxMiljopunkt" src="../assets/WPIxMiljopunkt.png"/>
+    <!--<img alt="WPIxMiljopunkt" src="../assets/WPIxMiljopunkt.png"/>-->
   </div>
 </template>
 

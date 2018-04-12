@@ -93,7 +93,7 @@ export default {
             var onSucc = function (response, parScope) {
               console.log('Complaint Success')
               parScope.invalidToken = false
-              location.reload(true)
+              window.location.reload()
               parScope.$router.push('Login')
             }
             var onFail = function (error, parScope) {
@@ -145,7 +145,7 @@ export default {
     logout () {
       dbInteract.methods.clearAllCookies()
       this.loggedIn = false
-      location.reload(true)
+      location.reload()
     },
     checkCredentials (myCreds) {
       if (myCreds.password === myCreds.confirmPassword) {
