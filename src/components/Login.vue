@@ -16,13 +16,19 @@
       <md-checkbox class="md-primary" v-model="rememberMe"></md-checkbox>
       <span>Remember Me</span>
       <br />
-      <span>Your credentials will be saved for 7 days or until you log out</span>
+      <span v-if="rememberMe">Your credentials will be saved for 7 days or until you log out</span>
       <br />
       <br />
       <span>Our website uses cookies to store your authentication details.</span>
       <br />
+      <a href="https://www.whatismybrowser.com/guides/how-to-enable-cookies/">How do I enable cookies?</a>
+      <br />
       <md-button class="md-raised md-primary" v-on:click="login()">Log In</md-button>
       <p id="errorMsg" v-if="invalidToken">Invalid username or password, please try again</p>
+      <template v-if="cookieWarning">
+        <h2 class="cookieMsg">Cookies Required</h2>
+        <p class="cookieMsg">Cookies are not enabled on your browser. Please enable cookies in your browser preferences to continue.</p>
+      </template>
     </template>
     <template v-if="loggedIn">
       <h1>You are logged in as {{getCookie('username')}}</h1>
@@ -46,24 +52,29 @@ export default {
       },
       invalidToken: false,
       loggedIn: false,
-      rememberMe: true
+      rememberMe: true,
+      cookieWarning: false
     }
   },
   methods: {
     login () {
-      var onSucc = function (response, parScope) {
-        console.log('Complaint Success')
-        parScope.invalidToken = false
-        parScope.loggedIn = true
-        parScope.$router.push('Login')
-        location.reload(true)
+      if (this.checkCookie()) {
+        var onSucc = function (response, parScope) {
+          console.log('Complaint Success')
+          parScope.invalidToken = false
+          parScope.loggedIn = true
+          parScope.$router.push('Login')
+          location.reload(true)
+        }
+        var onFail = function (error, parScope) {
+          console.log(error)
+          parScope.invalidToken = true
+        }
+        // console.log(dbInteract)
+        dbInteract.methods.postToGetToken(this.$api, this.myCredentials, onSucc, onFail, this, this.rememberMe)
+      } else {
+        this.cookieWarning = true
       }
-      var onFail = function (error, parScope) {
-        console.log(error)
-        parScope.invalidToken = true
-      }
-      // console.log(dbInteract)
-      dbInteract.methods.postToGetToken(this.$api, this.myCredentials, onSucc, onFail, this, this.rememberMe)
     },
     logout () {
       dbInteract.methods.clearAllCookies()
@@ -98,6 +109,18 @@ export default {
       } else {
         return false
       }
+    },
+    checkCookie () {
+      var cookieEnabled = navigator.cookieEnabled
+      if (!cookieEnabled) {
+        document.cookie = 'testcookie'
+        cookieEnabled = document.cookie.indexOf('testcookie') !== -1
+      }
+      return cookieEnabled || this.showCookieFail()
+    },
+    showCookieFail () {
+      // do something here
+      return false
     }
   },
   mounted () {
@@ -111,6 +134,9 @@ export default {
 
 <style scoped>
   #errorMsg {
+    color: red;
+  }
+  .cookieMsg {
     color: red;
   }
 </style>

@@ -31,9 +31,17 @@
       <md-checkbox class="md-primary" v-model="rememberMe"></md-checkbox>
       <span>Remember Me</span>
       <br />
-      <span>Your credentials will be saved for 7 days or until you log out</span>
+      <span v-if="rememberMe">Your credentials will be saved for 7 days or until you log out</span>
+      <br />
+      <span>Our website uses cookies to store your authentication details.</span>
+      <br />
+      <a href="https://www.whatismybrowser.com/guides/how-to-enable-cookies/">How do I enable cookies?</a>
       <br />
       <md-button class="md-raised md-primary" type="button" value="submit" v-on:click="createUser(myCredentials)">Create</md-button>
+      <template v-if="cookieWarning">
+        <h2 class="cookieMsg">Cookies Required</h2>
+        <p class="cookieMsg">Cookies are not enabled on your browser. Please enable cookies in your browser preferences to continue.</p>
+      </template>
       <p class="err" v-if="invalidCreation">{{ errorMessage }}. The username may be taken. Please try again with a different username or at a later date</p>
       <p class="err" v-if="invalidToken">Error: invalid token</p>
     </form>
@@ -58,38 +66,43 @@ export default {
       errorMessage: '',
       invalidToken: false,
       invalidCreation: false,
-      rememberMe: true
+      rememberMe: true,
+      cookieWarning: false
     }
   },
   methods: {
     // Create the user
     createUser (newUserCredentials) {
-      var onSucc = function (response, parScope, Up1Scope) {
-        var credentials = {
-          username: newUserCredentials.username,
-          password: newUserCredentials.password,
-          token: ''
-        }
-        parScope.invalidCreation = false
-        var onSucc = function (response, parScope) {
-          console.log('Complaint Success')
-          parScope.invalidToken = false
-          location.reload(true)
-          parScope.$router.push('Login')
+      if (this.checkCookie()) {
+        var onSucc = function (response, parScope, Up1Scope) {
+          var credentials = {
+            username: newUserCredentials.username,
+            password: newUserCredentials.password,
+            token: ''
+          }
+          parScope.invalidCreation = false
+          var onSucc = function (response, parScope) {
+            console.log('Complaint Success')
+            parScope.invalidToken = false
+            location.reload(true)
+            parScope.$router.push('Login')
+          }
+          var onFail = function (error, parScope) {
+            console.log(error)
+            parScope.invalidToken = true
+          }
+          Up1Scope.postToGetToken(parScope.$api, credentials, onSucc, onFail, parScope, parScope.rememberMe)
+          // this.login(credentials, parScope)
         }
         var onFail = function (error, parScope) {
           console.log(error)
-          parScope.invalidToken = true
+          parScope.errorMessage = error.message
+          parScope.invalidCreation = true
         }
-        Up1Scope.postToGetToken(parScope.$api, credentials, onSucc, onFail, parScope, parScope.rememberMe)
-        // this.login(credentials, parScope)
+        dbInteract.methods.postToUsers(this.$api, newUserCredentials, onSucc, onFail, this)
+      } else {
+        this.cookieWarning = true
       }
-      var onFail = function (error, parScope) {
-        console.log(error)
-        parScope.errorMessage = error.message
-        parScope.invalidCreation = true
-      }
-      dbInteract.methods.postToUsers(this.$api, newUserCredentials, onSucc, onFail, this)
     },
     getCookie (cname) {
       var name = cname + '='
@@ -121,6 +134,18 @@ export default {
       dbInteract.methods.clearAllCookies()
       this.loggedIn = false
       location.reload(true)
+    },
+    checkCookie () {
+      var cookieEnabled = navigator.cookieEnabled
+      if (!cookieEnabled) {
+        document.cookie = 'testcookie'
+        cookieEnabled = document.cookie.indexOf('testcookie') !== -1
+      }
+      return cookieEnabled || this.showCookieFail()
+    },
+    showCookieFail () {
+      // do something here
+      return false
     }
   },
   mounted () {
@@ -135,5 +160,8 @@ export default {
 <style scoped>
   .err {
     color:darkred;
+  }
+  .cookieMsg {
+    color: red;
   }
 </style>

@@ -32,10 +32,6 @@
 <script>
 /* eslint-disable */
 
-  const config = {
-    api: 'http://18.197.28.234:8000/'
-  }
-
   export default {
     name: 'App',
     data: () => ({
