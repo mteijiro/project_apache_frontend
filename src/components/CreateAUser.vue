@@ -13,6 +13,8 @@
       <md-field>
         <label>Password:</label>
         <md-input type="password" v-model="myCredentials.password"></md-input>
+        <span v-if="myCredentials.password.length < 6"
+              style="color: darkred; margin-right: 35px; margin-top: 5px;">Passwords must be more 6 or more characters</span>
       </md-field>
       <md-field>
         <label>Confirm Password:</label>
@@ -37,11 +39,16 @@
       <br />
       <a href="https://www.whatismybrowser.com/guides/how-to-enable-cookies/">How do I enable cookies?</a>
       <br />
-      <md-button class="md-raised md-primary" type="button" value="submit" v-on:click="createUser(myCredentials)">Create</md-button>
       <template v-if="cookieWarning">
         <h2 class="cookieMsg">Cookies Required</h2>
         <p class="cookieMsg">Cookies are not enabled on your browser. Please enable cookies in your browser preferences to continue.</p>
       </template>
+      <template v-if="invalidCredsWarning">
+        <h2 class="cookieMsg">Invalid Credentials</h2>
+        <p class="cookieMsg">Please insure you have filled out all fields and have satisfied all password requirements</p>
+      </template>
+      <br />
+      <md-button class="md-raised md-primary" type="button" value="submit" v-on:click="createUser(myCredentials)">Create</md-button>
       <p class="err" v-if="invalidCreation">{{ errorMessage }}. The username may be taken. Please try again with a different username or at a later date</p>
       <p class="err" v-if="invalidToken">Error: invalid token</p>
     </form>
@@ -67,39 +74,44 @@ export default {
       invalidToken: false,
       invalidCreation: false,
       rememberMe: true,
-      cookieWarning: false
+      cookieWarning: false,
+      invalidCredsWarning: false
     }
   },
   methods: {
     // Create the user
     createUser (newUserCredentials) {
       if (this.checkCookie()) {
-        var onSucc = function (response, parScope, Up1Scope) {
-          var credentials = {
-            username: newUserCredentials.username,
-            password: newUserCredentials.password,
-            token: ''
-          }
-          parScope.invalidCreation = false
-          var onSucc = function (response, parScope) {
-            console.log('Complaint Success')
-            parScope.invalidToken = false
-            location.reload(true)
-            parScope.$router.push('Login')
+        if (this.checkCredentials(newUserCredentials)) {
+          var onSucc = function (response, parScope, Up1Scope) {
+            var credentials = {
+              username: newUserCredentials.username,
+              password: newUserCredentials.password,
+              token: ''
+            }
+            parScope.invalidCreation = false
+            var onSucc = function (response, parScope) {
+              console.log('Complaint Success')
+              parScope.invalidToken = false
+              location.reload(true)
+              parScope.$router.push('Login')
+            }
+            var onFail = function (error, parScope) {
+              console.log(error)
+              parScope.invalidToken = true
+            }
+            Up1Scope.postToGetToken(parScope.$api, credentials, onSucc, onFail, parScope, parScope.rememberMe)
+            // this.login(credentials, parScope)
           }
           var onFail = function (error, parScope) {
             console.log(error)
-            parScope.invalidToken = true
+            parScope.errorMessage = error.message
+            parScope.invalidCreation = true
           }
-          Up1Scope.postToGetToken(parScope.$api, credentials, onSucc, onFail, parScope, parScope.rememberMe)
-          // this.login(credentials, parScope)
+          dbInteract.methods.postToUsers(this.$api, newUserCredentials, onSucc, onFail, this)
+        } else {
+          this.invalidCredsWarning = true
         }
-        var onFail = function (error, parScope) {
-          console.log(error)
-          parScope.errorMessage = error.message
-          parScope.invalidCreation = true
-        }
-        dbInteract.methods.postToUsers(this.$api, newUserCredentials, onSucc, onFail, this)
       } else {
         this.cookieWarning = true
       }
@@ -134,6 +146,17 @@ export default {
       dbInteract.methods.clearAllCookies()
       this.loggedIn = false
       location.reload(true)
+    },
+    checkCredentials (myCreds) {
+      if (myCreds.password === myCreds.confirmPassword) {
+        if (myCreds.username.length > 0 && myCreds.password.length >= 6 && myCreds.firstName.length > 0 && myCreds.lastName.length > 0) {
+          return true
+        } else {
+          return false
+        }
+      } else {
+        return false
+      }
     },
     checkCookie () {
       var cookieEnabled = navigator.cookieEnabled

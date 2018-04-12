@@ -3,7 +3,7 @@
     <h1>Submit A Complaint</h1>
     <md-steppers v-bind:md-active-step="formSteps[formIndex]" md-linear>
       <md-step v-bind:id="formSteps[0]" v-on:click="formIndex=0" v-bind:md-description="formIndex[0]"
-               v-bind:md-label="formIndex[0]">
+               v-bind:md-label="formIndex[0]" v-bind:md-done="myCredentials.token.length > 0">
         <!--<template v-if="formIndex === 0">-->
           <template v-if="!checkForToken()">
             <h2>You must be logged in to submit a complaint.</h2>
@@ -123,6 +123,11 @@
       <template v-if="formIndex === endFormIndex - 1">
         <md-button class="md-raised md-primary" v-on:click="submitComplaint(myCredentials, newComplaint)">Submit
         </md-button>
+        <template v-if="this.invalidComplaint">
+          <h2 class="err">Invalid Complaint</h2>
+          <p class="err">Please insure that your complaint has a category, subcategory, and location selected before submitting</p>
+        </template>
+
       </template>
     </div>
   </div>
@@ -161,11 +166,13 @@ export default {
       endFormIndex: 4,
       myCredentials: {
         username: '',
-        password: ''
+        password: '',
+        token: ''
       },
       mapInteracted: false,
       imageUpload: null,
       audioUpload: null,
+      invalidComplaint: false,
       formSteps: ['login', 'category', 'location', 'submit', 'done'],
       categories: [
         {
@@ -295,8 +302,20 @@ export default {
     // Advance the page or submit the form
     submitComplaint: function (myCredentials, newComplaint) {
       if (this.formIndex === this.endFormIndex - 1) {
-        this.sendToDatabase(myCredentials, newComplaint)
-        this.formIndex = this.formIndex + 1
+        if (this.checkComplaint(newComplaint)) {
+          this.invalidComplaint = false
+          this.sendToDatabase(myCredentials, newComplaint)
+          this.formIndex = this.formIndex + 1
+        } else {
+          this.invalidComplaint = true
+        }
+      }
+    },
+    checkComplaint (myComplaint) {
+      if (myComplaint.category.length > 0 && myComplaint.sub_category.length > 0 && myComplaint.latitude > 55.65 && myComplaint.latitude < 55.71 && myComplaint.longitude < 12.66 && myComplaint.longitude > 12.50) {
+        return true
+      } else {
+        return false
       }
     },
     sendToDatabase (myCredentials, newComplaint) {
@@ -327,7 +346,6 @@ export default {
     checkForToken () {
       // this.getCookie('username')
       this.myCredentials.token = this.getCookie('token')
-      console.log(this.myCredentials.token)
       if (this.myCredentials.token.length > 0) {
         return true
       } else {
@@ -350,5 +368,8 @@ export default {
   }
   #NGlist {
     margin-left: 0;
+  }
+  .err {
+    color:darkred;
   }
 </style>
