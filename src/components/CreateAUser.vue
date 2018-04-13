@@ -1,6 +1,10 @@
 <template>
   <div>
     <h1>Register</h1>
+    <h2>Cookie Data:</h2>
+    <p>Your Username: {{getCookie('username')}}</p>
+    <br/>
+    <p>Your Token: {{getCookie('token')}}</p>
     <template v-if="this.loggedIn">
       <h2>Please log out before creating a new account</h2>
       <md-button class="md-raised md-primary" v-on:click="logout()">Log Out</md-button>
@@ -93,8 +97,10 @@ export default {
             var onSucc = function (response, parScope) {
               console.log('Complaint Success')
               parScope.invalidToken = false
+              alert('Your Token before reload' + parScope.getCookie('token'))
               window.location.reload()
               parScope.$router.push('Login')
+              alert('Your Token after reload' + parScope.getCookie('token'))
             }
             var onFail = function (error, parScope) {
               console.log(error)

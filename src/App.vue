@@ -128,6 +128,10 @@
     text-align: left!important;
   }
 
+  .md-input {
+    font-size: 16px!important;
+  }
+
   #app {
     font-family: 'Avenir', Helvetica, Arial, sans-serif;
     -webkit-font-smoothing: antialiased;
@@ -161,12 +165,8 @@
 
   @media only screen and (max-width: 520px) {
     .md-app-scroller.md-layout-column.md-flex.md-theme-default.md-scrollbar {
-      margin-top: 148px!important;
+      margin-top: 148px !important;
     }
-  }
-
-  .md-input {
-    font-size: 16px;
   }
 
 </style>
@@ -195,7 +195,7 @@
   }
 
   .md-input {
-    font-size: 16px;
+    font-size: 72px;
   }
 
 </style>

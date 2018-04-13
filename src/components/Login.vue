@@ -4,6 +4,10 @@
 <template>
   <div>
     <h1>Account</h1>
+    <h2>Cookie Data:</h2>
+    <p>Your Username: {{getCookie('username')}}</p>
+    <br/>
+    <p>Your Token: {{getCookie('token')}}</p>
     <template v-if="!loggedIn">
       <md-field>
         <label>Username:</label>
@@ -125,6 +129,7 @@ export default {
   },
   mounted () {
     this.loggedIn = this.checkForToken()
+    alert('Your Token after going to login' + this.getCookie('token'))
   },
   updated () {
     this.loggedIn = this.checkForToken()
@@ -139,4 +144,5 @@ export default {
   .cookieMsg {
     color: red;
   }
+
 </style>
