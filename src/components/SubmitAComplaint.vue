@@ -1,38 +1,38 @@
 <template>
   <div class="greetings">
-    <h1>Submit A Complaint</h1>
+    <h1>{{$lang.SubmitAComplaintLang.submit_a_complaint}}</h1>
     <md-steppers v-bind:md-active-step="formSteps[formIndex]" md-linear>
       <md-step v-bind:id="formSteps[0]" v-on:click="formIndex=0" v-bind:md-description="formIndex[0]"
                v-bind:md-label="formIndex[0]" v-bind:md-done="myCredentials.token.length > 0">
         <!--<template v-if="formIndex === 0">-->
           <template v-if="!checkForToken()">
-            <h2>You must be logged in to submit a complaint.</h2>
-            <router-link to="Login">You can log in here</router-link>
+            <h2>{{$lang.SubmitAComplaintLang.logged_in_warn}}</h2>
+            <router-link to="Login">{{$lang.SubmitAComplaintLang.log_in_here}}</router-link>
           </template>
           <template v-if="checkForToken()">
-            <h2>You are currently logged in as: {{ getCookie ('username') }}</h2>
-            <span style="text-align: center;">Press next to continue</span>
+            <h2>{{$lang.SubmitAComplaintLang.logged_in_as}} {{ getCookie ('username') }}</h2>
+            <span style="text-align: center;">{{$lang.SubmitAComplaintLang.press_next}}</span>
           </template>
         <!--</template>-->
       </md-step>
       <md-step v-bind:id="formSteps[1]" v-on:click="formIndex=1" v-bind:md-label="formIndex[1]"
                v-bind:md-done="newComplaint.category.length > 1">
         <!--<template v-if="formIndex === 1">-->
-          <h2 align="left"><u>Category</u></h2>
+          <h2 align="left"><u>{{$lang.SubmitAComplaintLang.category}}</u></h2>
           <md-field>
-            <label>Category</label>
+            <label>{{$lang.SubmitAComplaintLang.category}}</label>
             <md-select v-model="newComplaint.category" name="category" id="category">
-              <md-option disabled value="">Select Category</md-option>
+              <md-option disabled value="">{{$lang.SubmitAComplaintLang.select_category}}</md-option>
               <md-option v-for="category in categories" v-bind:key="category.key" v-bind:value="category.value">
                 {{ category.value }}
               </md-option>
             </md-select>
           </md-field>
-          <h2 align="left"><u>Sub Category</u></h2>
+          <h2 align="left"><u>{{$lang.SubmitAComplaintLang.sub_category}}</u></h2>
           <md-field>
-            <label>Sub-category</label>
+            <label>{{$lang.SubmitAComplaintLang.sub_category}}</label>
             <md-select v-model="newComplaint.sub_category" name="category" id="category">
-              <md-option disabled value="">Select Noise Type</md-option>
+              <md-option disabled value="">{{$lang.SubmitAComplaintLang.select_noise}}</md-option>
               <md-option v-for="sub_category in sub_categories" v-bind:key="sub_category.key" v-bind:value="sub_category.value">
                 {{ sub_category.value }}
               </md-option>
@@ -54,14 +54,14 @@
           <!--</md-field>-->
           <!--<md-button class="md-raised" v-on:click="getUserLocation(this)">Auto Detect My Location</md-button>-->
           <md-field>
-            <label>Location (Search by Address):</label>
+            <label>{{$lang.SubmitAComplaintLang.location_address}}</label>
             <md-input id="addressBox"></md-input>
             <span class="md-helper-text">e.g. Regnbuepladsen 7</span>
           </md-field>
-          <md-button class="md-raised" v-on:click="searchAddress(lookupAddress)">Search</md-button>
-          <md-button class="md-raised" v-on:click="resetMarker()">Reset</md-button>
+          <md-button class="md-raised" v-on:click="searchAddress(lookupAddress)">{{$lang.SubmitAComplaintLang.search}}</md-button>
+          <md-button class="md-raised" v-on:click="resetMarker()">{{$lang.SubmitAComplaintLang.reset}}</md-button>
           <br/>
-          <span style="text-align: center;" id="locationDisplay">Please drag the arrow to your location.</span>
+          <span style="text-align: center;" id="locationDisplay">{{$lang.SubmitAComplaintLang.drag_pin}}</span>
           <leaflet-map id="myMap"
                        v-bind:newCoords="{latitude : newComplaint.latitude, longitude : newComplaint.longitude}"
                        v-on:coordsChanged="onDragMapCoords"></leaflet-map>
@@ -71,7 +71,7 @@
                v-bind:md-done="formIndex > 3">
         <!--<template v-if="formIndex === 3">-->
           <md-field>
-            <label>Comments:</label>
+            <label>{{$lang.SubmitAComplaintLang.comments}}</label>
             <md-textarea v-model="newComplaint.comments"></md-textarea>
           </md-field>
           <!--<md-field>-->
@@ -86,27 +86,25 @@
       </md-step>
       <md-step v-bind:id="formSteps[4]" v-on:click="formIndex=4" v-bind:md-label="formIndex[4]">
         <template v-if="formIndex === endFormIndex && returnParty === 'Police'">
-          <h2>Thank you</h2>
-          <p>Your complaint has been submitted</p>
-          <P>If you require immediate action, please call the police at 114.</P>
+          <h2>{{$lang.SubmitAComplaintLang.thank_you}}</h2>
+          <p>{{$lang.SubmitAComplaintLang.complaint_submitted}}</p>
+          <P>{{$lang.SubmitAComplaintLang.immediate_action}}</P>
         </template>
         <template v-if="formIndex === endFormIndex && returnParty === 'Noise Guard'">
           <template v-if="formIndex === endFormIndex && returnParty === 'Noise Guard'">
-            <h2>Please contact another authority!</h2>
-            <p>We are currently only accepting complaints from the following categories:</p>
+            <h2>{{$lang.SubmitAComplaintLang.redirect_heading}}</h2>
+            <p>{{$lang.SubmitAComplaintLang.only_accepting_for}}</p>
             <ul id="NGlist">
-              <li>Street Noise</li>
-              <li>Private Celebrations</li>
+              <li>{{$lang.SubmitAComplaintLang.street_noise}}</li>
+              <li>{{$lang.SubmitAComplaintLang.private_celebrations}}</li>
             </ul>
 
-            <p>If you would like to submit a complaint about anything else, please visit the København Kommune’s noise
-              complaint form via this link:
+            <p>{{$lang.SubmitAComplaintLang.kkdkredirect}}
               <a target="_blank" href="https://www.kk.dk/støj">https://www.kk.dk/støj</a>
             </p>
-            <p>If you would like to submit a complaint about noise generated by cafes, restaurants,
-              events or other venues, please contact the Noise Unit during the day or the Noise Guard at night.</p>
-            <p>Noise Unit: Man-Tors 9:00-15:00. Tel. 26 86 58 27</p>
-            <p>Noise Guard: Tors 19:00-01:00, Fre-Lør 21:00-03:00. Tel. 33 66 25 85</p>
+            <p>{{$lang.SubmitAComplaintLang.noise_authority_redirect}}</p>
+            <p>{{$lang.SubmitAComplaintLang.noise_unit_hours}}</p>
+            <p>{{$lang.SubmitAComplaintLang.noise_guard_hours}}</p>
           </template>
 
         </template>
@@ -118,14 +116,14 @@
         <md-button class="md-raised md-primary" v-on:click="backButtonPressed()">Back</md-button>
       </template>
       <template v-if="formIndex < endFormIndex - 1 && (getCookie('username')).length > 0">
-        <md-button id="nextButton" class="md-raised md-primary" v-on:click="nextButtonPressed()">Next</md-button>
+        <md-button id="nextButton" class="md-raised md-primary" v-on:click="nextButtonPressed()">{{$lang.SubmitAComplaintLang.next}}</md-button>
       </template>
       <template v-if="formIndex === endFormIndex - 1">
-        <md-button class="md-raised md-primary" v-on:click="submitComplaint(myCredentials, newComplaint)">Submit
+        <md-button class="md-raised md-primary" v-on:click="submitComplaint(myCredentials, newComplaint)">{{$lang.SubmitAComplaintLang.submit}}
         </md-button>
         <template v-if="this.invalidComplaint">
-          <h2 class="err">Invalid Complaint</h2>
-          <p class="err">Please insure that your complaint has a category, subcategory, and location selected before submitting</p>
+          <h2 class="err">{{$lang.SubmitAComplaintLang.invalid_complaint}}</h2>
+          <p class="err">{{$lang.SubmitAComplaintLang.invalid_complaint_desc}}</p>
         </template>
 
       </template>
