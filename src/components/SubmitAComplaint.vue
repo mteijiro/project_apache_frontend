@@ -24,7 +24,7 @@
             <md-select v-model="newComplaint.category" name="category" id="category">
               <md-option disabled value="">{{$lang.SubmitAComplaintLang.select_category}}</md-option>
               <md-option v-for="category in categories" v-bind:key="category.key" v-bind:value="category.value">
-                {{ category.value }}
+                {{ category.visible }}
               </md-option>
             </md-select>
           </md-field>
@@ -34,7 +34,7 @@
             <md-select v-model="newComplaint.sub_category" name="category" id="category">
               <md-option disabled value="">{{$lang.SubmitAComplaintLang.select_noise}}</md-option>
               <md-option v-for="sub_category in sub_categories" v-bind:key="sub_category.key" v-bind:value="sub_category.value">
-                {{ sub_category.value }}
+                {{ sub_category.visible }}
               </md-option>
             </md-select>
           </md-field>
@@ -113,7 +113,7 @@
     <br/>
     <div>
       <template v-if="formIndex > 0 && formIndex < endFormIndex">
-        <md-button class="md-raised md-primary" v-on:click="backButtonPressed()">Back</md-button>
+        <md-button class="md-raised md-primary" v-on:click="backButtonPressed()">{{$lang.SubmitAComplaintLang.back}}</md-button>
       </template>
       <template v-if="formIndex < endFormIndex - 1 && (getCookie('username')).length > 0">
         <md-button id="nextButton" class="md-raised md-primary" v-on:click="nextButtonPressed()">{{$lang.SubmitAComplaintLang.next}}</md-button>
@@ -175,31 +175,38 @@ export default {
       categories: [
         {
           key: 1,
+          visible: this.$lang.SubmitAComplaintLang.street_noise,
           value: 'Street Noise'
         },
         {
           key: 2,
+          visible: this.$lang.SubmitAComplaintLang.private_celebration,
           value: 'Private Celebration'
         },
         {
           key: 3,
+          visible: this.$lang.SubmitAComplaintLang.bar_restaurant,
           value: 'Bar/Restaurant'
         },
         {
           key: 4,
+          visible: this.$lang.SubmitAComplaintLang.construction,
           value: 'Construction'
         }],
       sub_categories: [
         {
           key: 1,
+          visible: this.$lang.SubmitAComplaintLang.loud_music_party,
           value: 'Loud Music/Party'
         },
         {
           key: 2,
+          visible: this.$lang.SubmitAComplaintLang.loud_talking_shouting,
           value: 'Loud Talking/Shouting'
         },
         {
           key: 3,
+          visible: this.$lang.SubmitAComplaintLang.banging_pounding,
           value: 'Banging/Pounding'
         }
       ],
@@ -318,7 +325,6 @@ export default {
     },
     sendToDatabase (myCredentials, newComplaint) {
       const onSucc = function (response, parScope) {
-        console.log('Complaint Success')
       }
       const onFail = function (error, parScope) {
         console.log(error)
@@ -335,7 +341,6 @@ export default {
           c = c.substring(1)
         }
         if (c.indexOf(name) === 0) {
-          console.log(c.substring(name.length, c.length))
           return c.substring(name.length, c.length)
         }
       }
@@ -349,13 +354,27 @@ export default {
       } else {
         return false
       }
+    },
+    // Refresh the toolbar header names on the toolbar to reflect the detected language
+    refreshCategoryNames () {
+      this.categories[1].visible = this.$lang.SubmitAComplaint.street_noise
+      this.categories[2].visible = this.$lang.SubmitAComplaint.private_celebration
+      this.categories[3].visible = this.$lang.SubmitAComplaint.bar_restaurant
+      this.categories[4].visible = this.$lang.SubmitAComplaint.construction
+      this.sub_categories[1].visible = this.$lang.SubmitAComplaint.loud_music_party
+      this.sub_categories[2].visible = this.$lang.SubmitAComplaint.loud_talking_shouting
+      this.sub_categories[3].visible = this.$lang.SubmitAComplaint.banging_pounding
     }
   },
   created: function () {
   },
+  beforeMount: function () {
+    this.refreshCategoryNames()
+  },
   mounted: function () {
     // setup
     this.provider = new OpenStreetMapProvider()
+    this.refreshCategoryNames()
   }
 }
 </script>

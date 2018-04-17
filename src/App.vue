@@ -61,7 +61,6 @@
             c = c.substring(1)
           }
           if (c.indexOf(name) === 0) {
-            console.log(c.substring(name.length, c.length))
             return c.substring(name.length, c.length)
           }
         }
@@ -70,7 +69,6 @@
       checkForToken () {
         // this.getCookie('username')
         var token = this.getCookie('token')
-        console.log(token)
         if (token.length > 0) {
           return true
         } else {
@@ -85,14 +83,19 @@
           this.accountTabLabel = this.$lang.ToolbarLang.log_in // 'Log In'
         }
       },
+      // Refresh the toolbar header names on the toolbar to reflect the detected language
+      refreshToolbarHeaders () {
+        this.toolbarNames.menu = this.$lang.ToolbarLang.menu
+        this.toolbarNames.submit_a_complaint = this.$lang.ToolbarLang.submit_a_complaint
+        this.toolbarNames.register = this.$lang.ToolbarLang.register
+        this.toolbarNames.about = this.$lang.ToolbarLang.about
+      },
       changeLanguage () {
         if (this.$lang.getLang() === 'en') {
-          console.log('Changing language from en to dk')
           this.$lang.setLang('dk')
           this.deleteCookie('lang')
           this.createCookieLang('dk')
         } else {
-          console.log('Changing language from dk to en')
           this.$lang.setLang('en')
           this.deleteCookie('lang')
           this.createCookieLang('en')
@@ -112,20 +115,19 @@
     beforeMount() {
       this.displayUserName()
       this.setAccountTabLabel()
+      this.refreshToolbarHeaders()
     },
     updated() {
       this.displayUserName()
       this.setAccountTabLabel()
     },
     mounted : function () {
-      console.log('Detecting language from cookie')
       if (this.getCookie('language') !== null) {
-        console.log('Cookie exists: changing to: ' + this.getCookie('language'))
         this.$lang.setLang(this.getCookie('language'))
       } else {
-        console.log('Cookie does not exist. Defaulting to EN')
         this.$lang.setLang('en')
       }
+      this.refreshToolbarHeaders()
     },
     created() {
     }
