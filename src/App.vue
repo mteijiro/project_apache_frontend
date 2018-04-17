@@ -5,16 +5,17 @@
         <md-app-toolbar class="md-large md-dense md-primary">
           <div class="md-toolbar-row">
             <div class="md-toolbar-section-start">
-              <span class="md-title">Noise Complaint App</span>
+              <span class="md-title">{{$lang.ToolbarLang.app_name}}</span>
             </div>
-            <span id="loginName" v-if="username.length > 0">Logged In: {{ username }}</span>
+            <md-button id="localization" v-on:click="changeLanguage()">{{$lang.ToolbarLang.language}}{{this.$lang.getLang()}} </md-button>
+            <span id="loginName" v-if="username.length > 0">{{$lang.ToolbarLang.logged_in}}{{ username }}</span>
           </div>
           <div class="md-toolbar-row">
             <md-tabs class="md-primary" md-alignment="centered" md-sync-route>
-              <md-tab id="tab-menu" md-label="Menu" to="/"></md-tab>
-              <md-tab id="tab-submit" md-label="Submit A Complaint" to="/SubmitAComplaint"></md-tab>
-              <md-tab id="tab-create" md-label="Register" to="/CreateAUser"></md-tab>
-              <md-tab id="tab-about" md-label="About" to="/About"></md-tab>
+              <md-tab id="tab-menu" v-bind:md-label="toolbarNames.menu" to="/"></md-tab>
+              <md-tab id="tab-submit" v-bind:md-label="toolbarNames.submit_a_complaint" to="/SubmitAComplaint"></md-tab>
+              <md-tab id="tab-create" v-bind:md-label="toolbarNames.register" to="/CreateAUser"></md-tab>
+              <md-tab id="tab-about" v-bind:md-label="toolbarNames.about" to="/About"></md-tab>
               <md-tab id="tab-login" v-bind:md-label="accountTabLabel" to="/Login"></md-tab>
             </md-tabs>
           </div>
@@ -30,22 +31,25 @@
 </template>
 
 <script>
-/* eslint-disable */
 
+/* eslint-disable */
   export default {
     name: 'App',
-    data: () => ({
+    data: (parent) => ({
       menuVisible: false,
       username: '',
-      accountTabLabel: 'My Account'
+      accountTabLabel: 'My Account',
+      toolbarNames: {
+        menu: parent.$lang.ToolbarLang.menu,
+        submit_a_complaint: parent.$lang.ToolbarLang.submit_a_complaint,
+        register: parent.$lang.ToolbarLang.register,
+        about: parent.$lang.ToolbarLang.about
+      }
     }),
     methods: {
       displayUserName () {
         var myToken = this.getCookie('token')
         this.username = this.getCookie('username')
-        // if (myToken.token.length > 0) {
-        //   this.getUserName(myToken)
-        // }
       },
       getCookie (cname) {
         var name = cname + '='
@@ -57,7 +61,6 @@
             c = c.substring(1)
           }
           if (c.indexOf(name) === 0) {
-            console.log(c.substring(name.length, c.length))
             return c.substring(name.length, c.length)
           }
         }
@@ -66,7 +69,6 @@
       checkForToken () {
         // this.getCookie('username')
         var token = this.getCookie('token')
-        console.log(token)
         if (token.length > 0) {
           return true
         } else {
@@ -76,36 +78,58 @@
       //Returns "Log In" if not storing token, otherwise returns "My Account"
       setAccountTabLabel () {
         if (this.checkForToken()) {
-          this.accountTabLabel = 'My Account'
+          this.accountTabLabel = this.$lang.ToolbarLang.my_account // 'My Account'
         } else {
-          this.accountTabLabel = 'Log In'
+          this.accountTabLabel = this.$lang.ToolbarLang.log_in // 'Log In'
         }
+      },
+      // Refresh the toolbar header names on the toolbar to reflect the detected language
+      refreshToolbarHeaders () {
+        this.toolbarNames.menu = this.$lang.ToolbarLang.menu
+        this.toolbarNames.submit_a_complaint = this.$lang.ToolbarLang.submit_a_complaint
+        this.toolbarNames.register = this.$lang.ToolbarLang.register
+        this.toolbarNames.about = this.$lang.ToolbarLang.about
+      },
+      changeLanguage () {
+        if (this.$lang.getLang() === 'en') {
+          this.$lang.setLang('dk')
+          this.deleteCookie('lang')
+          this.createCookieLang('dk')
+        } else {
+          this.$lang.setLang('en')
+          this.deleteCookie('lang')
+          this.createCookieLang('en')
+        }
+        location.reload()
+      },
+      createCookieLang () {
+        const expireDate = new Date(Date.now())
+        expireDate.setDate(expireDate.getDate() + 7)
+        const expireDateString = expireDate.toUTCString()
+        document.cookie = 'language=' + this.$lang.getLang() + '; expires=' + expireDateString + '; domain=' + location.hostname + '; path=/'
+      },
+      deleteCookie (name) {
+        document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT;'
       }
-      //Send a request to get the user name
-      //Currently just points to the first user name because i'm not sure
-      // getUserName (myToken) {
-      //   var myAuth = 'Token ' + JSON.parse(myToken)
-      //   console.log(myAuth)
-      //   fetch('http://localhost:8000/users/1/', {
-      //     mode: 'cors',
-      //     headers: {
-      //       'Authorization': myAuth
-      //     },
-      //     method: 'GET',
-      //   }).then(response => response.json()) // Convert the token response into a JSON object
-      //     .then(JSONresponse => JSON.stringify(JSONresponse.username)) // Select the token string from the object.
-      //     .then(username => { this.username = username; console.log(username) })
-      // },
     },
     beforeMount() {
       this.displayUserName()
       this.setAccountTabLabel()
+      this.refreshToolbarHeaders()
     },
     updated() {
       this.displayUserName()
       this.setAccountTabLabel()
     },
     mounted : function () {
+      if (this.getCookie('language') !== null) {
+        this.$lang.setLang(this.getCookie('language'))
+      } else {
+        this.$lang.setLang('en')
+      }
+      this.refreshToolbarHeaders()
+    },
+    created() {
     }
   }
 </script>

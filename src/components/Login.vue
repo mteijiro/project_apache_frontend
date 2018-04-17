@@ -3,36 +3,36 @@
 
 <template>
   <div>
-    <h1>Account</h1>
-    <template v-if="!loggedIn">
+    <h1>{{$lang.LoginLang.account}}</h1>
+    <template v-if="!loggedIn">`
       <md-field>
-        <label>Username:</label>
+        <label>{{$lang.LoginLang.username}}</label>
         <md-input v-model="myCredentials.username"></md-input>
       </md-field>
       <md-field>
-        <label>Password:</label>
+        <label>{{$lang.LoginLang.password}}</label>
         <md-input type="password" v-model="myCredentials.password"></md-input>
       </md-field>
       <md-checkbox class="md-primary" v-model="rememberMe"></md-checkbox>
-      <span>Remember Me</span>
+      <span>{{$lang.LoginLang.remember_me}}</span>
       <br />
-      <span v-if="rememberMe">Your credentials will be saved for 7 days or until you log out</span>
+      <span v-if="rememberMe">{{$lang.LoginLang.remember_me_desc}}</span>
       <br />
       <br />
-      <span>Our website uses cookies to store your authentication details.</span>
+      <span>{{$lang.LoginLang.cookie_disclaimer}}</span>
       <br />
-      <a href="https://www.whatismybrowser.com/guides/how-to-enable-cookies/">How do I enable cookies?</a>
+      <a href="https://www.whatismybrowser.com/guides/how-to-enable-cookies/">{{$lang.LoginLang.cookie_help}}</a>
       <br />
-      <md-button class="md-raised md-primary" v-on:click="login()">Log In</md-button>
-      <p id="errorMsg" v-if="invalidToken">Invalid username or password, please try again</p>
+      <md-button class="md-raised md-primary" v-on:click="login()">{{$lang.LoginLang.log_in}}</md-button>
+      <p id="errorMsg" v-if="invalidToken">{{$lang.LoginLang.creds_wrong}}</p>
       <template v-if="cookieWarning">
-        <h2 class="cookieMsg">Cookies Required</h2>
-        <p class="cookieMsg">Cookies are not enabled on your browser. Please enable cookies in your browser preferences to continue.</p>
+        <h2 class="cookieMsg">{{$lang.LoginLang.cookie_req}}</h2>
+        <p class="cookieMsg">{{$lang.LoginLang.cookie_req_desc}}</p>
       </template>
     </template>
     <template v-if="loggedIn">
-      <h1>You are logged in as {{getCookie('username')}}</h1>
-      <md-button class="md-raised md-primary" v-on:click="logout()">Log Out</md-button>
+      <h1>{{$lang.LoginLang.logged_in_as}}{{getCookie('username')}}</h1>
+      <md-button class="md-raised md-primary" v-on:click="logout()">{{$lang.LoginLang.log_out}}</md-button>
     </template>
   </div>
 </template>

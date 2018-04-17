@@ -1,57 +1,57 @@
 <template>
   <div>
-    <h1>Register</h1>
+    <h1>{{$lang.CreateAUserLang.register}}</h1>
     <template v-if="this.loggedIn">
-      <h2>Please log out before creating a new account</h2>
-      <md-button class="md-raised md-primary" v-on:click="logout()">Log Out</md-button>
+      <h2>{{$lang.CreateAUserLang.please_logout}}</h2>
+      <md-button class="md-raised md-primary" v-on:click="logout()">{{$lang.CreateAUserLang.log_out}}</md-button>
     </template>
     <form v-if="!this.loggedIn">
       <md-field>
-        <label>Username:</label>
+        <label>{{$lang.CreateAUserLang.username}}</label>
         <md-input type="text" v-model="myCredentials.username"></md-input>
         <md-input type="text" v-model="myCredentials.username"></md-input>
       </md-field>
       <md-field>
-        <label>Password:</label>
+        <label>{{$lang.CreateAUserLang.password}}</label>
         <md-input type="password" v-model="myCredentials.password"></md-input>
         <span v-if="myCredentials.password.length < 6"
-              style="color: darkred; margin-right: 35px; margin-top: 5px;">Passwords must be more 6 or more characters</span>
+              style="color: darkred; margin-right: 35px; margin-top: 5px;">{{$lang.CreateAUserLang.password_length}}</span>
       </md-field>
       <md-field>
-        <label>Confirm Password:</label>
+        <label>{{$lang.CreateAUserLang.password_confirm}}</label>
         <md-input type="password" v-model="myCredentials.confirmPassword"></md-input>
         <span v-if="myCredentials.password !== myCredentials.confirmPassword"
-              style="color: darkred; margin-right: 35px; margin-top: 5px;">Passwords do not match</span>
+              style="color: darkred; margin-right: 35px; margin-top: 5px;">{{$lang.CreateAUserLang.password_match}}</span>
       </md-field>
       <md-field>
-        <label>First Name:</label>
+        <label>{{$lang.CreateAUserLang.name_first}}</label>
         <md-input type="text" v-model="myCredentials.firstName"></md-input>
       </md-field>
       <md-field>
-        <label>Last Name:</label>
+        <label>{{$lang.CreateAUserLang.name_last}}</label>
         <md-input type="text" v-model="myCredentials.lastName"></md-input>
       </md-field>
       <md-checkbox class="md-primary" v-model="rememberMe"></md-checkbox>
-      <span>Remember Me</span>
+      <span>{{$lang.CreateAUserLang.remember_me}}</span>
       <br />
-      <span v-if="rememberMe">Your credentials will be saved for 7 days or until you log out</span>
+      <span v-if="rememberMe">{{$lang.CreateAUserLang.remember_me_desc}}</span>
       <br />
-      <span>Our website uses cookies to store your authentication details.</span>
+      <span>{{$lang.CreateAUserLang.cookie_disclaimer}}</span>
       <br />
-      <a href="https://www.whatismybrowser.com/guides/how-to-enable-cookies/">How do I enable cookies?</a>
+      <a href="https://www.whatismybrowser.com/guides/how-to-enable-cookies/">{{$lang.CreateAUserLang.cookie_help}}</a>
       <br />
       <template v-if="cookieWarning">
-        <h2 class="cookieMsg">Cookies Required</h2>
-        <p class="cookieMsg">Cookies are not enabled on your browser. Please enable cookies in your browser preferences to continue.</p>
+        <h2 class="cookieMsg">{{$lang.CreateAUserLang.cookie_req}}</h2>
+        <p class="cookieMsg">{{$lang.CreateAUserLang.cookie_req_desc}}</p>
       </template>
       <template v-if="invalidCredsWarning">
-        <h2 class="cookieMsg">Invalid Credentials</h2>
-        <p class="cookieMsg">Please insure you have filled out all fields and have satisfied all password requirements</p>
+        <h2 class="cookieMsg">{{$lang.CreateAUserLang.invalid_creds}}</h2>
+        <p class="cookieMsg">{{$lang.CreateAUserLang.invalid_creds_desc}}</p>
       </template>
       <br />
-      <md-button class="md-raised md-primary" type="button" value="submit" v-on:click="createUser(myCredentials)">Create</md-button>
-      <p class="err" v-if="invalidCreation">{{ errorMessage }}. The username may be taken. Please try again with a different username or at a later date</p>
-      <p class="err" v-if="invalidToken">Error: invalid token</p>
+      <md-button class="md-raised md-primary" type="button" value="submit" v-on:click="createUser(myCredentials)">{{$lang.CreateAUserLang.create}}</md-button>
+      <p class="err" v-if="invalidCreation">{{ errorMessage }}. {{$lang.CreateAUserLang.username_taken}}</p>
+      <p class="err" v-if="invalidToken">{{$lang.CreateAUserLang.invalid_token}}</p>
     </form>
   </div>
 </template>
