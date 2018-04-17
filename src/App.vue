@@ -7,7 +7,7 @@
             <div class="md-toolbar-section-start">
               <span class="md-title">{{$lang.ToolbarLang.app_name}}</span>
             </div>
-            <md-button id="localization" v-on:click="changeLanguage()">Language: {{this.$lang.getLang()}} </md-button>
+            <md-button id="localization" v-on:click="changeLanguage()">{{$lang.ToolbarLang.language}}{{this.$lang.getLang()}} </md-button>
             <span id="loginName" v-if="username.length > 0">{{$lang.ToolbarLang.logged_in}}{{ username }}</span>
           </div>
           <div class="md-toolbar-row">

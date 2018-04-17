@@ -14,9 +14,7 @@ Lang.requireAll(require.context('./lang', true, /\.js$/))
 
 Vue.use(VueMaterial)
 Vue.use(VueResource)
-Vue.use(Lang, {
-  // default: 'en'
-})
+Vue.use(Lang)
 
 Vue.config.productionTip = false
 
@@ -25,7 +23,7 @@ var config = {
   localApi: 'http://localhost:8000'
 }
 
-Vue.prototype.$api = config.localApi
+Vue.prototype.$api = config.api
 
 /* eslint-disable no-new */
 new Vue({
