@@ -48,8 +48,9 @@
 </template>
 
 <script>
-import {OpenStreetMapProvider} from 'leaflet-geosearch'
 /* eslint-disable */
+  import {OpenStreetMapProvider} from 'leaflet-geosearch'
+
   export default {
     name: "DataSet",
     data() {
@@ -105,11 +106,11 @@ import {OpenStreetMapProvider} from 'leaflet-geosearch'
     },
     methods: {
 
-      getCoords () {
+      getCoords() {
         this.searchAddress(this.querySet.location)
       },
       // Search the given address using the provider defined (Google, OpenStreetmaps, etc.)
-      async searchAddress (address) {
+      async searchAddress(address) {
         // search
         // const address = document.getElementById('addressBox').value
         const results = await this.provider.search({query: address})
@@ -128,14 +129,6 @@ import {OpenStreetMapProvider} from 'leaflet-geosearch'
         var longitude = this.coords.longitude
         var latitude = this.coords.latitude
 
-        // var m_per_deg_lat = 111132.92 -
-        //   (559.822 * Math.cos( 2 * latMid )) +
-        //   (1.175 * Math.cos( 4 * latMid )) -
-        //   (0.0023 * Math.cos( 6 * latMid ))
-        // var m_per_deg_lon = 111412.84 * Math.cos( latMid ) -
-        //   93.5 * Math.cos( 3 * longMid ) +
-        //   118 * Math.cos( 5 * longMid )
-
         var deg_lat_per_m = range / 111111 // Deviation in degrees
         var deg_long_per_m = range / (111111 * Math.cos(latitude)) // Deviation in degrees
 
@@ -148,7 +141,7 @@ import {OpenStreetMapProvider} from 'leaflet-geosearch'
       },
 
       // Builds the string query
-      buildQuery (category, sub_category, lat_low, lat_high, long_low, long_high, startDatetime, endDatetime) {
+      buildQuery(category, sub_category, lat_low, lat_high, long_low, long_high, startDatetime, endDatetime) {
         if (category === 'Street Noise') {
           category = 'Street%20Noise'
         }
@@ -157,20 +150,8 @@ import {OpenStreetMapProvider} from 'leaflet-geosearch'
         }
         var queryString = "/complaints/?category=" + category + "&sub_category=" + sub_category +
           "&timestamp_0=" + startDatetime + "&timestamp_1=" + endDatetime +
-          "latitude_0=" + lat_low + "&latitude_1=" + lat_high + "&longitude_0=" + long_low + "&longitude_1=" + long_high
+          "&latitude_0=" + lat_low + "&latitude_1=" + lat_high + "&longitude_0=" + long_low + "&longitude_1=" + long_high
         return queryString
-      },
-
-      // Converts query's returned JSON to CSV
-      jsonToCSV(json) {
-        const items = json.items
-        const replacer = (key, value) => value === null ? '' : value // specify how you want to handle null values here
-        const header = Object.keys(items[0])
-        let csv = items.map(row => header.map(fieldName => JSON.stringify(row[fieldName], replacer)).join(','))
-        csv.unshift(header.join(','))
-        csv = csv.join('\r\n')
-
-        return csv
       },
 
       // Reset the form
@@ -205,21 +186,74 @@ import {OpenStreetMapProvider} from 'leaflet-geosearch'
 
         console.log(queryString)
       },
+      convertToCSV(objArray) {
+        var array = typeof objArray != 'object' ? JSON.parse(objArray) : objArray;
+        var str = '';
+
+        for (var i = 0; i < array.length; i++) {
+          var line = '';
+          for (var index in array[i]) {
+            if (line != '') line += ','
+
+            line += array[i][index];
+          }
+
+          str += line + '\r\n';
+        }
+
+        return str;
+      },
+      exportCSVFile(headers, items, fileTitle) {
+        if (headers) {
+          items.unshift(headers);
+        }
+
+        // Convert Object to JSON
+        var jsonObject = JSON.stringify(items);
+
+        var csv = this.convertToCSV(jsonObject);
+
+        var exportedFilename = fileTitle + '.csv' || 'export.csv';
+
+        var blob = new Blob([csv], {type: 'text/csv;charset=utf-8;'});
+        if (navigator.msSaveBlob) { // IE 10+
+          navigator.msSaveBlob(blob, exportedFilename);
+        } else {
+          var link = document.createElement("a");
+          if (link.download !== undefined) { // feature detection
+            // Browsers that support HTML5 download attribute
+            var url = URL.createObjectURL(blob);
+            link.setAttribute("href", url);
+            link.setAttribute("download", exportedFilename);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+          }
+        }
+      },
       // Query DB and download CSV
       onDownloadClicked(json) {
         // Take query, convert to CSV
-        var csv = this.jsonToCSV(json)
 
-        // Return CSV
-        var encodedUri = encodeURI(csv)
-        var link = document.createElement("a")
-        link.setAttribute("href", encodedUri)
-        link.setAttribute("download", "customers.csv")
-        document.body.appendChild(link) // Required for FF
-        link.click()
-        document.body.removeChild(link)
+        var fileTitle = 'data';
+
+        var headers = {
+          id: 'Complaint #',
+          timestamp: "Date/Time",
+          owner: "User",
+          comments: "Comments",
+          category: "Category",
+          sub_category: "Sub-Category",
+          latitude: "Latitude",
+          longitude: "Longitude",
+          image: "Image",
+          audio: "Audio"
+        };
+
+        this.exportCSVFile(headers, json, fileTitle);
       },
-      getData (token, queryString, parScope) {
+      getData(token, queryString, parScope) {
         alert(token)
         fetch(this.$api + /*'/complaints/'*/ queryString, {
           mode: 'cors',
@@ -228,9 +262,11 @@ import {OpenStreetMapProvider} from 'leaflet-geosearch'
           },
           method: 'GET'
         }).then(response => response.json()) // Convert the token response into a JSON object
-          .then(JSONresponse => { parScope.myJSONResponse = JSONresponse }) // Select the token string from the object.
+          .then(JSONresponse => {
+            parScope.myJSONResponse = JSONresponse
+          }) // Select the token string from the object.
       },
-      getCookie (cname) {
+      getCookie(cname) {
         var name = cname + '='
         var decodedCookie = decodeURIComponent(document.cookie)
         var ca = decodedCookie.split(';')
