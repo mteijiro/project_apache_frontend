@@ -9,7 +9,6 @@
       <md-field>
         <label>{{$lang.CreateAUserLang.username}}</label>
         <md-input type="text" v-model="myCredentials.username"></md-input>
-        <md-input type="text" v-model="myCredentials.username"></md-input>
       </md-field>
       <md-field>
         <label>{{$lang.CreateAUserLang.password}}</label>
@@ -58,9 +57,11 @@
 
 <script>
 import { dbInteract } from '../../src/mixins/dbInteract'
+import { cookies } from '../../src/mixins/cookies'
+
 export default {
   name: 'CreateAUser',
-  mixins: [dbInteract],
+  mixins: [dbInteract, cookies],
   data () {
     return {
       myCredentials: {
@@ -82,8 +83,8 @@ export default {
   methods: {
     // Create the user
     createUser (newUserCredentials) {
-      if (this.checkCookie()) {
-        if (this.checkCredentials(newUserCredentials)) {
+      if (cookies.methods.checkCookie()) {
+        if (this.checkValidCredentials(newUserCredentials)) {
           var onSucc = function (response, parScope, Up1Scope) {
             var credentials = {
               username: newUserCredentials.username,
@@ -92,7 +93,6 @@ export default {
             }
             parScope.invalidCreation = false
             var onSucc = function (response, parScope) {
-              console.log('Complaint Success')
               parScope.invalidToken = false
               window.location.reload()
               parScope.$router.push('Login')
@@ -117,40 +117,14 @@ export default {
         this.cookieWarning = true
       }
     },
-    getCookie (cname) {
-      var name = cname + '='
-      var decodedCookie = decodeURIComponent(document.cookie)
-      var ca = decodedCookie.split(';')
-      for (var i = 0; i < ca.length; i++) {
-        var c = ca[i]
-        while (c.charAt(0) === ' ') {
-          c = c.substring(1)
-        }
-        if (c.indexOf(name) === 0) {
-          console.log(c.substring(name.length, c.length))
-          return c.substring(name.length, c.length)
-        }
-      }
-      return ''
-    },
-    checkForToken () {
-      // this.getCookie('username')
-      this.myCredentials.token = this.getCookie('token')
-      console.log(this.myCredentials.token)
-      if (this.myCredentials.token.length > 0) {
-        return true
-      } else {
-        return false
-      }
-    },
     logout () {
-      dbInteract.methods.clearAllCookies()
+      cookies.methods.clearAllCookies(this)
       this.loggedIn = false
       location.reload()
     },
-    checkCredentials (myCreds) {
-      if (myCreds.password === myCreds.confirmPassword) {
-        if (myCreds.username.length > 0 && myCreds.password.length >= 6 && myCreds.firstName.length > 0 && myCreds.lastName.length > 0) {
+    checkValidCredentials (myCredentialss) {
+      if (myCredentialss.password === myCredentialss.confirmPassword) {
+        if (myCredentialss.username.length > 0 && myCredentialss.password.length >= 6 && myCredentialss.firstName.length > 0 && myCredentialss.lastName.length > 0) {
           return true
         } else {
           return false
@@ -158,25 +132,13 @@ export default {
       } else {
         return false
       }
-    },
-    checkCookie () {
-      var cookieEnabled = navigator.cookieEnabled
-      if (!cookieEnabled) {
-        document.cookie = 'testcookie'
-        cookieEnabled = document.cookie.indexOf('testcookie') !== -1
-      }
-      return cookieEnabled || this.showCookieFail()
-    },
-    showCookieFail () {
-      // do something here
-      return false
     }
   },
   mounted () {
-    this.loggedIn = this.checkForToken()
+    this.loggedIn = cookies.methods.checkForToken(this)
   },
   updated () {
-    this.loggedIn = this.checkForToken()
+    this.loggedIn = cookies.methods.checkForToken(this)
   }
 }
 </script>

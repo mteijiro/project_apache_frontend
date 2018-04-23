@@ -53,11 +53,6 @@ npm run e2e
 npm test
 ```
 
-#Google Maps API Key
-```
-Key: AIzaSyBtbgI7FARpJ_QbVkdd7NNYMR8neEAQ-wg
-```
-
 #Modules
 ```
 Uses vue2-google-maps from:

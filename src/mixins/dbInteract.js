@@ -1,18 +1,17 @@
+/* dbInteract.js
+   Functions that make calls to the database API are locted here.
+ */
+
+import { cookies } from '../../src/mixins/cookies'
+
 export const dbInteract = {
+  mixins: [cookies],
   data () {
     return {
     }
   },
   methods: {
-    cookieExists (key) {
-      const myCookie = this.getCookie(key)
-      if (myCookie !== null) {
-        return true
-      } else {
-        return false
-      }
-    },
-    // Compile credentials into a formdata object for a post submission
+    // Compile credentials into a FormData object for a post submission
     compileCreateCredentials (myCredentials) {
       const credentialsForm = new FormData()
       credentialsForm.append('username', myCredentials.username)
@@ -43,22 +42,35 @@ export const dbInteract = {
       }
       return complaintForm
     },
-    getCookie (cname) {
-      var name = cname + '='
-      var decodedCookie = decodeURIComponent(document.cookie)
-      var ca = decodedCookie.split(';')
-      for (var i = 0; i < ca.length; i++) {
-        var c = ca[i]
-        while (c.charAt(0) === ' ') {
-          c = c.substring(1)
+    // createUser: Creates a user in the database with the given credentials
+    //  newUserCredentials: Credentials required to create a user
+    //  parScope: The scope of the parent (calling) object (used for callback functions).
+    createUser (newUserCredentials, parScope) {
+      var onSucc = function (response, parScope, Up1Scope) {
+        var credentials = {
+          username: newUserCredentials.username,
+          password: newUserCredentials.password,
+          token: ''
         }
-        if (c.indexOf(name) === 0) {
-          console.log(c.substring(name.length, c.length))
-          return c.substring(name.length, c.length)
+        parScope.invalidCreation = false
+        var onSucc = function (response, parScope) {
+          parScope.invalidToken = false
+          parScope.$router.push('/')
         }
+        var onFail = function (error, parScope) {
+          console.log(error)
+          parScope.invalidToken = true
+        }
+        Up1Scope.postToGetToken(parScope.$api, credentials, onSucc, onFail, parScope)
       }
-      return ''
+      var onFail = function (error, parScope) {
+        console.log(error)
+        parScope.errorMessage = error.message
+        parScope.invalidCreation = true
+      }
+      dbInteract.methods.postToUsers(parScope.$api, newUserCredentials, onSucc, onFail, this)
     },
+    // postToUsers: Posts to /users/ and asks for a new user to be created.
     postToUsers (apiLoc, newUserData, onSucc, onFail, parentScope) {
       // Compile the user data into formData for sending
       const credentialsForm = this.compileCreateCredentials(newUserData)
@@ -80,36 +92,9 @@ export const dbInteract = {
           }
         })
     },
-    createUser (newUserCredentials, parScope) {
-      var onSucc = function (response, parScope, Up1Scope) {
-        var credentials = {
-          username: newUserCredentials.username,
-          password: newUserCredentials.password,
-          token: ''
-        }
-        parScope.invalidCreation = false
-        var onSucc = function (response, parScope) {
-          console.log('Complaint Success')
-          parScope.invalidToken = false
-          parScope.$router.push('/')
-        }
-        var onFail = function (error, parScope) {
-          console.log(error)
-          parScope.invalidToken = true
-        }
-        Up1Scope.postToGetToken(parScope.$api, credentials, onSucc, onFail, parScope)
-      }
-      var onFail = function (error, parScope) {
-        console.log(error)
-        parScope.errorMessage = error.message
-        parScope.invalidCreation = true
-      }
-      dbInteract.methods.postToUsers(this.$api, newUserCredentials, onSucc, onFail, this)
-    },
     postToComplaints (apiLoc, newComplaintData, onSucc, onFail, parentScope) {
       const complaintForm = this.compileComplaint(newComplaintData)
-      var myAuth = 'Token ' + JSON.parse(this.getCookie('token'))
-      console.log(myAuth)
+      var myAuth = 'Token ' + JSON.parse(cookies.methods.getCookie('token'))
       fetch(apiLoc + '/complaints/', {
         mode: 'cors',
         headers: {
@@ -130,7 +115,6 @@ export const dbInteract = {
         })
     },
     postToGetToken (apiLoc, credentials, onSucc, onFail, parentScope, rememberMe) {
-      console.log(credentials)
       var credentialsForm = this.compileCredentials(credentials)
       fetch(apiLoc + '/get-token/', {
         mode: 'cors',
@@ -140,10 +124,9 @@ export const dbInteract = {
         .then(response => response.json()) // Convert the token response into a JSON object
         .then(JSONresponse => JSON.stringify(JSONresponse.token)) // Select the token string from the object.
         .then(response => {
-          console.log(response)
           credentials.token = response
-          this.clearAllCookies()
-          if (parentScope.rememberMe) {
+          cookies.methods.clearAllCookies(parentScope)
+          if (rememberMe) {
             const expireDate = new Date(Date.now())
             expireDate.setDate(expireDate.getDate() + 7)
             const expireDateString = expireDate.toUTCString()
@@ -162,13 +145,6 @@ export const dbInteract = {
             onFail(error, parentScope)
           }
         })
-    },
-    deleteCookie (name) {
-      document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT;'
-    },
-    clearAllCookies () {
-      this.deleteCookie('token')
-      this.deleteCookie('username')
     },
     handleErrors (response) {
       if (!response.ok) {

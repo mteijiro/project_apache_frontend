@@ -7,8 +7,8 @@
             <div class="md-toolbar-section-start">
               <span class="md-title">{{$lang.ToolbarLang.app_name}}</span>
             </div>
-            <md-button id="localization" v-on:click="changeLanguage()">{{$lang.ToolbarLang.language}}{{this.$lang.getLang()}} </md-button>
-            <span id="loginName" v-if="username.length > 0">{{$lang.ToolbarLang.logged_in}}{{ username }}</span>
+            <md-button id="localization" v-on:click="changeLanguage()">{{$lang.ToolbarLang.language}}{{curLanguage}} </md-button>
+            <span id="loginName" v-if="myCredentials.username.length > 0">{{$lang.ToolbarLang.logged_in}}{{ myCredentials.username }}</span>
           </div>
           <div class="md-toolbar-row">
             <md-tabs class="md-primary" md-alignment="centered" md-sync-route>
@@ -20,7 +20,6 @@
             </md-tabs>
           </div>
         </md-app-toolbar>
-
         <md-app-content>
           <br/>
           <router-view/>
@@ -31,53 +30,36 @@
 </template>
 
 <script>
+import { cookies } from '../src/mixins/cookies'
 
 /* eslint-disable */
   export default {
     name: 'App',
+    mixins: [cookies],
     data: (parent) => ({
       menuVisible: false,
-      username: '',
-      accountTabLabel: 'My Account',
+      myCredentials: {
+        username: '',
+        token: ''
+      },
+      accountTabLabel: parent.$lang.ToolbarLang.my_account,
+      curLanguage: 'en',
       toolbarNames: {
         menu: parent.$lang.ToolbarLang.menu,
         submit_a_complaint: parent.$lang.ToolbarLang.submit_a_complaint,
         register: parent.$lang.ToolbarLang.register,
         about: parent.$lang.ToolbarLang.about
-      }
+      },
     }),
     methods: {
       displayUserName () {
-        var myToken = this.getCookie('token')
-        this.username = this.getCookie('username')
-      },
-      getCookie (cname) {
-        var name = cname + '='
-        var decodedCookie = decodeURIComponent(document.cookie)
-        var ca = decodedCookie.split(';')
-        for (var i = 0; i < ca.length; i++) {
-          var c = ca[i]
-          while (c.charAt(0) === ' ') {
-            c = c.substring(1)
-          }
-          if (c.indexOf(name) === 0) {
-            return c.substring(name.length, c.length)
-          }
-        }
-        return ''
-      },
-      checkForToken () {
-        // this.getCookie('username')
-        var token = this.getCookie('token')
-        if (token.length > 0) {
-          return true
-        } else {
-          return false
-        }
+        this.myCredentials.token = cookies.methods.getCookie('token')
+        this.myCredentials.username = cookies.methods.getCookie('username')
       },
       //Returns "Log In" if not storing token, otherwise returns "My Account"
       setAccountTabLabel () {
-        if (this.checkForToken()) {
+        if (cookies.methods.checkForToken(this)) {
+          this.myCredentials.token = cookies.methods.getCookie('token')
           this.accountTabLabel = this.$lang.ToolbarLang.my_account // 'My Account'
         } else {
           this.accountTabLabel = this.$lang.ToolbarLang.log_in // 'Log In'
@@ -93,24 +75,17 @@
       changeLanguage () {
         if (this.$lang.getLang() === 'en') {
           this.$lang.setLang('dk')
-          this.deleteCookie('lang')
-          this.createCookieLang('dk')
+          this.curLanguage = 'dk'
+          cookies.methods.deleteCookie('lang')
+          cookies.methods.createCookieLang('dk')
         } else {
           this.$lang.setLang('en')
-          this.deleteCookie('lang')
-          this.createCookieLang('en')
+          this.curLanguage = 'en'
+          cookies.methods.deleteCookie('lang')
+          cookies.methods.createCookieLang('en')
         }
         location.reload()
       },
-      createCookieLang () {
-        const expireDate = new Date(Date.now())
-        expireDate.setDate(expireDate.getDate() + 7)
-        const expireDateString = expireDate.toUTCString()
-        document.cookie = 'language=' + this.$lang.getLang() + '; expires=' + expireDateString + '; domain=' + location.hostname + '; path=/'
-      },
-      deleteCookie (name) {
-        document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT;'
-      }
     },
     beforeMount() {
       this.displayUserName()
@@ -122,10 +97,12 @@
       this.setAccountTabLabel()
     },
     mounted : function () {
-      if (this.getCookie('language') !== null) {
-        this.$lang.setLang(this.getCookie('language'))
+      if (cookies.methods.getCookie('language') !== null) {
+        this.$lang.setLang(cookies.methods.getCookie('language'))
+        this.curLanguage = cookies.methods.getCookie('language')
       } else {
         this.$lang.setLang('en')
+        this.curLanguage = 'en'
       }
       this.refreshToolbarHeaders()
     },

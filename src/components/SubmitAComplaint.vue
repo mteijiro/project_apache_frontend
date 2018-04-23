@@ -4,16 +4,16 @@
     <md-steppers v-bind:md-active-step="formSteps[formIndex]" md-linear>
       <md-step v-bind:id="formSteps[0]" v-on:click="formIndex=0" v-bind:md-description="formIndex[0]"
                v-bind:md-label="formIndex[0]" v-bind:md-done="myCredentials.token.length > 0">
-        <!--<template v-if="formIndex === 0">-->
-          <template v-if="!checkForToken()">
+        <template v-if="formIndex === 0">
+          <template v-if="!(tokenExists)">
             <h2>{{$lang.SubmitAComplaintLang.logged_in_warn}}</h2>
             <router-link to="Login">{{$lang.SubmitAComplaintLang.log_in_here}}</router-link>
           </template>
-          <template v-if="checkForToken()">
-            <h2>{{$lang.SubmitAComplaintLang.logged_in_as}} {{ getCookie ('username') }}</h2>
+          <template v-if="(tokenExists)">
+            <h2>{{$lang.SubmitAComplaintLang.logged_in_as}} {{ myCredentials.username }}</h2>
             <span style="text-align: center;">{{$lang.SubmitAComplaintLang.press_next}}</span>
           </template>
-        <!--</template>-->
+        </template>
       </md-step>
       <md-step v-bind:id="formSteps[1]" v-on:click="formIndex=1" v-bind:md-label="formIndex[1]"
                v-bind:md-done="newComplaint.category.length > 1">
@@ -24,7 +24,7 @@
             <md-select v-model="newComplaint.category" name="category" id="category">
               <md-option disabled value="">{{$lang.SubmitAComplaintLang.select_category}}</md-option>
               <md-option v-for="category in categories" v-bind:key="category.key" v-bind:value="category.value">
-                {{ category.visible }}
+                {{ category.displayName }}
               </md-option>
             </md-select>
           </md-field>
@@ -34,7 +34,7 @@
             <md-select v-model="newComplaint.sub_category" name="category" id="category">
               <md-option disabled value="">{{$lang.SubmitAComplaintLang.select_noise}}</md-option>
               <md-option v-for="sub_category in sub_categories" v-bind:key="sub_category.key" v-bind:value="sub_category.value">
-                {{ sub_category.visible }}
+                {{ sub_category.displayName }}
               </md-option>
             </md-select>
           </md-field>
@@ -115,7 +115,7 @@
       <template v-if="formIndex > 0 && formIndex < endFormIndex">
         <md-button class="md-raised md-primary" v-on:click="backButtonPressed()">{{$lang.SubmitAComplaintLang.back}}</md-button>
       </template>
-      <template v-if="formIndex < endFormIndex - 1 && (getCookie('username')).length > 0">
+      <template v-if="formIndex < endFormIndex - 1 && (myCredentials.username.length > 0)">
         <md-button id="nextButton" class="md-raised md-primary" v-on:click="nextButtonPressed()">{{$lang.SubmitAComplaintLang.next}}</md-button>
       </template>
       <template v-if="formIndex === endFormIndex - 1">
@@ -136,19 +136,18 @@
 import LeafletMap from './LeafletMap.vue'
 import {OpenStreetMapProvider} from 'leaflet-geosearch'
 import { dbInteract } from '../../src/mixins/dbInteract'
+import { cookies } from '../../src/mixins/cookies'
 
 export default {
   name: 'SubmitAComplaint',
   props: {},
-  mixins: [dbInteract],
+  mixins: [dbInteract, cookies],
   components: {
     'leaflet-map': LeafletMap
   },
   data () {
     return {
-      newComplaint: {
-        username: '',
-        password: '',
+      newComplaint: { // The noise complaint data that will be stored in the server
         category: '',
         sub_category: '',
         latitude: 55.681078,
@@ -157,60 +156,60 @@ export default {
         imageUP: null,
         audioUP: null
       },
-      returnParty: 'Police',
-      lookupAddress: '',
-      provider: null,
-      formIndex: 0,
-      endFormIndex: 4,
-      myCredentials: {
+      myCredentials: { // User credential data used for authentication and sending to the server
         username: '',
-        password: '',
         token: ''
       },
-      mapInteracted: false,
-      imageUpload: null,
-      audioUpload: null,
-      invalidComplaint: false,
-      formSteps: ['login', 'category', 'location', 'submit', 'done'],
-      categories: [
+      returnParty: 'Police', // Used to identify which party the complaint should be sent to.
+      lookupAddress: '', // The address used for the OpenStreetMaps search.
+      provider: null, // The OpenStreetMaps api
+      formIndex: 0, // Used to keep track of which part of the form the user is on
+      endFormIndex: 4, // Used to indicate the length of the form (0-based indexed)
+      tokenExists: false, // Indicatees whether or not a credential cookie was found.
+      mapInteracted: false, // Used to indicate whether or not the leaflet map was interacted with.
+      imageUpload: null, // The image upload url
+      audioUpload: null, // The audio upload url
+      invalidComplaint: false, // Turns true when all the neccessary data for the complaint has been filled out
+      formSteps: ['login', 'category', 'location', 'submit', 'done'], // String names for the complaint form steps
+      categories: [ // Objects that indicate the category.
         {
-          key: 1,
-          visible: this.$lang.SubmitAComplaintLang.street_noise,
-          value: 'Street Noise'
+          key: 1, // Used for indexing/identification
+          displayName: '', // this.$lang.SubmitAComplaintLang.street_noise, // The localized string that gets displayed to the user
+          value: 'Street Noise' // The string that gets sent to the server
         },
         {
           key: 2,
-          visible: this.$lang.SubmitAComplaintLang.private_celebration,
+          displayName: '', // this.$lang.SubmitAComplaintLang.private_celebration,
           value: 'Private Celebration'
         },
         {
           key: 3,
-          visible: this.$lang.SubmitAComplaintLang.bar_restaurant,
+          displayName: '', // this.$lang.SubmitAComplaintLang.bar_restaurant,
           value: 'Bar/Restaurant'
         },
         {
           key: 4,
-          visible: this.$lang.SubmitAComplaintLang.construction,
+          displayName: '', // this.$lang.SubmitAComplaintLang.construction,
           value: 'Construction'
         }],
       sub_categories: [
         {
           key: 1,
-          visible: this.$lang.SubmitAComplaintLang.loud_music_party,
+          displayName: '', // this.$lang.SubmitAComplaintLang.loud_music_party,
           value: 'Loud Music/Party'
         },
         {
           key: 2,
-          visible: this.$lang.SubmitAComplaintLang.loud_talking_shouting,
+          displayName: '', // this.$lang.SubmitAComplaintLang.loud_talking_shouting,
           value: 'Loud Talking/Shouting'
         },
         {
           key: 3,
-          visible: this.$lang.SubmitAComplaintLang.banging_pounding,
+          displayName: '', // this.$lang.SubmitAComplaintLang.banging_pounding,
           value: 'Banging/Pounding'
         }
       ],
-      noiseGuardCategories: ['Bar/Restaurant', 'Construction']
+      noiseGuardCategories: ['Bar/Restaurant', 'Construction'] // Category values that should result in a noise guard redirect
     }
   },
   methods: {
@@ -331,39 +330,15 @@ export default {
       }
       dbInteract.methods.postToComplaints(this.$api, newComplaint, onSucc, onFail, this)
     },
-    getCookie (cname) {
-      var name = cname + '='
-      var decodedCookie = decodeURIComponent(document.cookie)
-      var ca = decodedCookie.split(';')
-      for (var i = 0; i < ca.length; i++) {
-        var c = ca[i]
-        while (c.charAt(0) === ' ') {
-          c = c.substring(1)
-        }
-        if (c.indexOf(name) === 0) {
-          return c.substring(name.length, c.length)
-        }
-      }
-      return ''
-    },
-    checkForToken () {
-      // this.getCookie('username')
-      this.myCredentials.token = this.getCookie('token')
-      if (this.myCredentials.token.length > 0) {
-        return true
-      } else {
-        return false
-      }
-    },
     // Refresh the toolbar header names on the toolbar to reflect the detected language
     refreshCategoryNames () {
-      this.categories[1].visible = this.$lang.SubmitAComplaint.street_noise
-      this.categories[2].visible = this.$lang.SubmitAComplaint.private_celebration
-      this.categories[3].visible = this.$lang.SubmitAComplaint.bar_restaurant
-      this.categories[4].visible = this.$lang.SubmitAComplaint.construction
-      this.sub_categories[1].visible = this.$lang.SubmitAComplaint.loud_music_party
-      this.sub_categories[2].visible = this.$lang.SubmitAComplaint.loud_talking_shouting
-      this.sub_categories[3].visible = this.$lang.SubmitAComplaint.banging_pounding
+      this.categories[0].displayName = this.$lang.SubmitAComplaintLang.street_noise
+      this.categories[1].displayName = this.$lang.SubmitAComplaintLang.private_celebration
+      this.categories[2].displayName = this.$lang.SubmitAComplaintLang.bar_restaurant
+      this.categories[3].displayName = this.$lang.SubmitAComplaintLang.construction
+      this.sub_categories[0].displayName = this.$lang.SubmitAComplaintLang.loud_music_party
+      this.sub_categories[1].displayName = this.$lang.SubmitAComplaintLang.loud_talking_shouting
+      this.sub_categories[2].displayName = this.$lang.SubmitAComplaintLang.banging_pounding
     }
   },
   created: function () {
@@ -375,6 +350,11 @@ export default {
     // setup
     this.provider = new OpenStreetMapProvider()
     this.refreshCategoryNames()
+    this.tokenExists = cookies.methods.checkForToken(this)
+    if (this.tokenExists) {
+      this.myCredentials.username = cookies.methods.getCookie('username')
+      this.myCredentials.token = cookies.methods.getCookie('token')
+    }
   }
 }
 </script>

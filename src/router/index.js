@@ -1,6 +1,5 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-// import LeafletMap from '@/components/LeafletMap'
 import MainMenu from '@/components/MainMenu'
 import SubmitAComplaint from '@/components/SubmitAComplaint'
 import About from '@/components/About'

@@ -31,7 +31,7 @@
       </template>
     </template>
     <template v-if="loggedIn">
-      <h1>{{$lang.LoginLang.logged_in_as}}{{getCookie('username')}}</h1>
+      <h1>{{$lang.LoginLang.logged_in_as}}{{tokenUsername}}</h1>
       <md-button class="md-raised md-primary" v-on:click="logout()">{{$lang.LoginLang.log_out}}</md-button>
     </template>
   </div>
@@ -39,10 +39,11 @@
 
 <script>
 import { dbInteract } from '../../src/mixins/dbInteract'
+import { cookies } from '../../src/mixins/cookies'
 
 export default {
   name: 'Login',
-  mixins: [dbInteract],
+  mixins: [dbInteract, cookies],
   data () {
     return {
       myCredentials: {
@@ -50,6 +51,7 @@ export default {
         password: '',
         token: ''
       },
+      tokenUsername: '',
       invalidToken: false,
       loggedIn: false,
       rememberMe: true,
@@ -58,9 +60,8 @@ export default {
   },
   methods: {
     login () {
-      if (this.checkCookie()) {
+      if (cookies.methods.checkCookie()) {
         var onSucc = function (response, parScope) {
-          console.log('Complaint Success')
           parScope.invalidToken = false
           parScope.loggedIn = true
           window.location.reload()
@@ -70,64 +71,34 @@ export default {
           console.log(error)
           parScope.invalidToken = true
         }
-        // console.log(dbInteract)
         dbInteract.methods.postToGetToken(this.$api, this.myCredentials, onSucc, onFail, this, this.rememberMe)
       } else {
         this.cookieWarning = true
       }
     },
     logout () {
-      dbInteract.methods.clearAllCookies()
+      cookies.methods.clearAllCookies(this)
       this.loggedIn = false
       location.reload()
-    },
-    getCookie (cname) {
-      var name = cname + '='
-      var decodedCookie = decodeURIComponent(document.cookie)
-      var ca = decodedCookie.split(';')
-      for (var i = 0; i < ca.length; i++) {
-        var c = ca[i]
-        while (c.charAt(0) === ' ') {
-          c = c.substring(1)
-        }
-        if (c.indexOf(name) === 0) {
-          console.log(c.substring(name.length, c.length))
-          return c.substring(name.length, c.length)
-        }
-      }
-      return ''
-    },
-    deleteCookie (name) {
-      document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT;'
-    },
-    checkForToken () {
-      // this.getCookie('username')
-      this.myCredentials.token = this.getCookie('token')
-      console.log(this.myCredentials.token)
-      if (this.myCredentials.token.length > 0) {
-        return true
-      } else {
-        return false
-      }
-    },
-    checkCookie () {
-      var cookieEnabled = navigator.cookieEnabled
-      if (!cookieEnabled) {
-        document.cookie = 'testcookie'
-        cookieEnabled = document.cookie.indexOf('testcookie') !== -1
-      }
-      return cookieEnabled || this.showCookieFail()
-    },
-    showCookieFail () {
-      // do something here
-      return false
     }
   },
   mounted () {
-    this.loggedIn = this.checkForToken()
+    this.loggedIn = cookies.methods.checkForToken(this)
+    if (this.loggedIn) {
+      this.myCredentials.username = cookies.methods.getCookie('username')
+      this.myCredentials.token = cookies.methods.getCookie('token')
+      this.tokenUsername = cookies.methods.getCookie('username')
+    } else {
+    }
   },
   updated () {
-    this.loggedIn = this.checkForToken()
+    this.loggedIn = cookies.methods.checkForToken(this)
+    if (this.loggedIn) {
+      this.myCredentials.username = cookies.methods.getCookie('username')
+      this.myCredentials.token = cookies.methods.getCookie('token')
+      this.tokenUsername = cookies.methods.getCookie('username')
+    } else {
+    }
   }
 }
 </script>
