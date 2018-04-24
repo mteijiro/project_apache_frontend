@@ -17,7 +17,7 @@
               <md-tab id="tab-create" v-bind:md-label="toolbarNames.register" to="/CreateAUser"></md-tab>
               <md-tab id="tab-about" v-bind:md-label="toolbarNames.about" to="/About"></md-tab>
               <md-tab id="tab-login" v-bind:md-label="accountTabLabel" to="/Login"></md-tab>
-              <md-tab id="tab-dataset" md-label="DataSet" to="/DataSet"></md-tab>
+              <!--<md-tab id="tab-dataset" md-label="DataSet" to="/DataSet"></md-tab>-->
             </md-tabs>
           </div>
         </md-app-toolbar>
@@ -77,12 +77,12 @@ import { cookies } from '../src/mixins/cookies'
         if (this.$lang.getLang() === 'en') {
           this.$lang.setLang('dk')
           this.curLanguage = 'dk'
-          cookies.methods.deleteCookie('lang')
+          cookies.methods.deleteCookie('language')
           cookies.methods.createCookieLang('dk')
         } else {
           this.$lang.setLang('en')
           this.curLanguage = 'en'
-          cookies.methods.deleteCookie('lang')
+          cookies.methods.deleteCookie('language')
           cookies.methods.createCookieLang('en')
         }
         location.reload()
@@ -98,12 +98,14 @@ import { cookies } from '../src/mixins/cookies'
       this.setAccountTabLabel()
     },
     mounted : function () {
-      if (cookies.methods.getCookie('language') !== null) {
+      if (cookies.methods.getCookie('language').length > 0) {
+        alert(cookies.methods.getCookie('language'))
         this.$lang.setLang(cookies.methods.getCookie('language'))
         this.curLanguage = cookies.methods.getCookie('language')
       } else {
         this.$lang.setLang('en')
         this.curLanguage = 'en'
+        cookies.methods.createCookieLang('en')
       }
       this.refreshToolbarHeaders()
     },
@@ -165,6 +167,10 @@ import { cookies } from '../src/mixins/cookies'
     justify-content: center!important;
   }
 
+  body > div.md-datepicker-dialog.md-theme-default > div.md-datepicker-body > div.md-dialog-actions.md-datepicker-body-footer > button > div > div {
+    color: #ffffff !important;
+  }
+
   @media only screen and (max-width: 520px) {
     .md-app-scroller.md-layout-column.md-flex.md-theme-default.md-scrollbar {
       margin-top: 148px !important;
@@ -201,5 +207,3 @@ import { cookies } from '../src/mixins/cookies'
   }
 
 </style>
-
-
