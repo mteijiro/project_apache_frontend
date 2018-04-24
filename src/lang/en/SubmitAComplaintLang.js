@@ -1,6 +1,7 @@
 module.exports = {
   submit_a_complaint: 'Submit A Complaint',
   logged_in_warn: 'You must be logged in to submit a complaint',
+  logged_in_warn2: 'You must be logged in',
   log_in_here: 'You can log in here',
   logged_in_as: 'You are currently logged in as: ',
   press_next: 'Press next to continue',
@@ -33,5 +34,11 @@ module.exports = {
   private_celebration: 'Private Celebration',
   banging_pounding: 'Banging/Pounding',
   bar_restaurant: 'Bar/Restaurant',
-  construction: 'Construction'
+  construction: 'Construction',
+  your_complaint_categorized: 'Your report has been collected and was categorized as ', // Gtranslated
+  file_formal_police: 'To file a formal complaint, please call the police at 114.', // Gtranslated
+  police_can_help_with: 'The Police can help with noise related to:', // Gtranslated
+  file_formal_noise_unit: 'To file a formal complaint, please call the Noise Unit or Noise Guard', // Gtranslated
+  file_formal_noise_form: 'Alternatively, you can file a complaint via the Municipality’s noise complaint form', // Gtranslated
+  municipality_can_help_with: 'The Municipality can help with noise related to:' // Gtranslated
 }

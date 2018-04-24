@@ -5,20 +5,11 @@
       <md-step v-bind:id="formSteps[0]" v-on:click="formIndex=0" v-bind:md-description="formIndex[0]"
                v-bind:md-label="formIndex[0]" v-bind:md-done="formIndex > 0">
         <template v-if="formIndex === 0">
-          <!--<template v-if="!(tokenExists)">-->
-            <!--<h2>{{$lang.SubmitAComplaintLang.logged_in_warn}}</h2>-->
-            <!--<router-link to="Login">{{$lang.SubmitAComplaintLang.log_in_here}}</router-link>-->
-          <!--</template>-->
-          <!--<template v-if="(tokenExists)">-->
-            <!--<h2>{{$lang.SubmitAComplaintLang.logged_in_as}} {{ myCredentials.username }}</h2>-->
-          <h2>Submit A Noise Complaint</h2>
-            <span style="text-align: center;">{{$lang.SubmitAComplaintLang.press_next}}</span>
-          <!--</template>-->
+          <span style="text-align: center;">{{$lang.SubmitAComplaintLang.press_next}}</span>
         </template>
       </md-step>
       <md-step v-bind:id="formSteps[1]" v-on:click="formIndex=1" v-bind:md-label="formIndex[1]"
                v-bind:md-done="newComplaint.category.length > 1">
-        <!--<template v-if="formIndex === 1">-->
           <h2 align="left"><u>{{$lang.SubmitAComplaintLang.category}}</u></h2>
           <md-field>
             <label>{{$lang.SubmitAComplaintLang.category}}</label>
@@ -39,21 +30,10 @@
               </md-option>
             </md-select>
           </md-field>
-        <!--</template>-->
       </md-step>
       <md-step v-bind:id="formSteps[2]" v-on:click="formIndex=2" v-bind:md-label="formIndex[2]"
                v-bind:md-done="mapInteracted === true">
-        <!--<template v-if="formIndex === 2">-->
           <br/>
-          <!--<md-field>-->
-          <!--<label>Latitude:</label>-->
-          <!--<md-input v-model="newComplaint.latitude"></md-input>-->
-          <!--</md-field>-->
-          <!--<md-field>-->
-          <!--<label>Longitude:</label>-->
-          <!--<md-input v-model="newComplaint.longitude"></md-input>-->
-          <!--</md-field>-->
-          <!--<md-button class="md-raised" v-on:click="getUserLocation(this)">Auto Detect My Location</md-button>-->
           <md-field>
             <label>{{$lang.SubmitAComplaintLang.location_address}}</label>
             <md-input id="addressBox"></md-input>
@@ -64,7 +44,7 @@
           <br/>
           <span style="text-align: center;" id="locationDisplay">{{$lang.SubmitAComplaintLang.drag_pin}}</span>
           <leaflet-map id="myMap"
-                       v-bind:newCoords="{latitude : newComplaint.latitude, longitude : newComplaint.longitude}"
+                       v-bind:newCoords="{latitude : newComplaint.latitude, longitude : newComplaint.longitude, range : 0.0}"
                        v-on:coordsChanged="onDragMapCoords"></leaflet-map>
         <!--</template>-->
       </md-step>
@@ -88,26 +68,47 @@
       <md-step v-bind:id="formSteps[4]" v-on:click="formIndex=4" v-bind:md-label="formIndex[4]">
         <template v-if="formIndex === endFormIndex && returnParty === 'Police'">
           <h2>{{$lang.SubmitAComplaintLang.thank_you}}</h2>
-          <p>{{$lang.SubmitAComplaintLang.complaint_submitted}}</p>
-          <P>{{$lang.SubmitAComplaintLang.immediate_action}}</P>
+          <p>{{$lang.SubmitAComplaintLang.your_complaint_categorized}}<b>{{searchCategory(newComplaint.category)}}</b>.</p>
+          <br />
+          <p>{{$lang.SubmitAComplaintLang.file_formal_police}}</p>
+          <p>{{$lang.SubmitAComplaintLang.police_can_help_with}}</p>
+          <ul>
+            <li>{{categories[0].displayName}}</li>
+            <li>{{categories[1].displayName}}</li>
+          </ul>
+
+          <!--<h2>{{$lang.SubmitAComplaintLang.thank_you}}</h2>-->
+          <!--<p align="center">{{$lang.SubmitAComplaintLang.complaint_submitted}}</p>-->
+          <!--<P align="center">{{$lang.SubmitAComplaintLang.immediate_action}}</P>-->
         </template>
         <template v-if="formIndex === endFormIndex && returnParty === 'Noise Guard'">
-          <template v-if="formIndex === endFormIndex && returnParty === 'Noise Guard'">
-            <h2>{{$lang.SubmitAComplaintLang.redirect_heading}}</h2>
-            <p>{{$lang.SubmitAComplaintLang.only_accepting_for}}</p>
-            <ul id="NGlist">
-              <li>{{$lang.SubmitAComplaintLang.street_noise}}</li>
-              <li>{{$lang.SubmitAComplaintLang.private_celebrations}}</li>
-            </ul>
+          <h2>{{$lang.SubmitAComplaintLang.thank_you}}</h2>
+          <p>{{$lang.SubmitAComplaintLang.your_complaint_categorized}} <b>{{searchCategory(newComplaint.category)}}</b>.</p>
 
-            <p>{{$lang.SubmitAComplaintLang.kkdkredirect}}
-              <a target="_blank" href="https://www.kk.dk/støj">https://www.kk.dk/støj</a>
-            </p>
-            <p>{{$lang.SubmitAComplaintLang.noise_authority_redirect}}</p>
-            <p>{{$lang.SubmitAComplaintLang.noise_unit_hours}}</p>
-            <p>{{$lang.SubmitAComplaintLang.noise_guard_hours}}</p>
-          </template>
+          <p>{{$lang.SubmitAComplaintLang.file_formal_noise_unit}}</p>
+          <p>{{$lang.SubmitAComplaintLang.noise_unit_hours}}</p>
+          <p>{{$lang.SubmitAComplaintLang.noise_guard_hours}}</p>
+          <br />
+          <p>{{$lang.SubmitAComplaintLang.file_formal_noise_form}}</p>
+          <a href="https://www.kk.dk/støj">https://www.kk.dk/støj</a>
+          <p>{{$lang.SubmitAComplaintLang.municipality_can_help_with}}</p>
+          <ul>
+            <li>{{categories[2].displayName}}</li>
+            <li>{{categories[3].displayName}}</li>
+          </ul>
 
+          <!--<h2>{{$lang.SubmitAComplaintLang.redirect_heading}}</h2>-->
+          <!--<p>{{$lang.SubmitAComplaintLang.only_accepting_for}}</p>-->
+          <!--<ul id="NGlist">-->
+            <!--<li>{{$lang.SubmitAComplaintLang.street_noise}}</li>-->
+            <!--<li>{{$lang.SubmitAComplaintLang.private_celebrations}}</li>-->
+          <!--</ul>-->
+          <!--<p>{{$lang.SubmitAComplaintLang.kkdkredirect}}-->
+            <!--<a target="_blank" href="https://www.kk.dk/støj">https://www.kk.dk/støj</a>-->
+          <!--</p>-->
+          <!--<p>{{$lang.SubmitAComplaintLang.noise_authority_redirect}}</p>-->
+          <!--<p>{{$lang.SubmitAComplaintLang.noise_unit_hours}}</p>-->
+          <!--<p>{{$lang.SubmitAComplaintLang.noise_guard_hours}}</p>-->
         </template>
       </md-step>
     </md-steppers>
@@ -275,11 +276,11 @@ export default {
     nextButtonPressed () {
       if (this.formIndex < this.endFormIndex - 1) {
         this.onNoiseGuardSelected()
-        if (this.returnParty === 'Noise Guard' && this.formIndex >= 1) {
-          this.formIndex = 4
-        } else {
-          this.formIndex = this.formIndex + 1
-        }
+        // if (this.returnParty === 'Noise Guard' && this.formIndex >= 1) {
+        //   this.formIndex = 4
+        // } else {
+        this.formIndex = this.formIndex + 1
+        // }
       }
     },
     // Update the latitude and longitude values on this vue object based off of the values passed in
@@ -324,6 +325,16 @@ export default {
         return false
       }
     },
+    // Match the current complaint category to it's translated counterpart
+    searchCategory (category) {
+      var i
+      for (i = 0; i < this.categories.length; i++) {
+        if (category === this.categories[i].value) {
+          return this.categories[i].displayName
+        }
+        return category
+      }
+    },
     sendToDatabase (myCredentials, newComplaint) {
       const onSucc = function (response, parScope) {
       }
@@ -362,6 +373,14 @@ export default {
 </script>
 
 <style scoped>
+  .centerP {
+    text-align: center!important;
+  }
+
+  .listHead {
+    text-align: left!important;
+  }
+
   .md-steppers-navigation {
     box-shadow: none!important;
   }

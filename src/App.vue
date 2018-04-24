@@ -7,11 +7,11 @@
             <div class="md-toolbar-section-start">
               <span class="md-title">{{$lang.ToolbarLang.app_name}}</span>
             </div>
-            <md-button id="localization" v-on:click="changeLanguage()">{{$lang.ToolbarLang.language}}{{curLanguage}} </md-button>
+            <md-button id="localization" class="md-raised" v-on:click="changeLanguage()">{{$lang.ToolbarLang.language}}{{curLanguage}} </md-button>
             <span id="loginName" v-if="myCredentials.username.length > 0">{{$lang.ToolbarLang.logged_in}}{{ myCredentials.username }}</span>
           </div>
           <div class="md-toolbar-row">
-            <md-tabs class="md-primary" md-sync-route>
+            <md-tabs class="md-primary"  md-sync-route>
               <md-tab id="tab-menu" v-bind:md-label="toolbarNames.menu" to="/"></md-tab>
               <md-tab id="tab-submit" v-bind:md-label="toolbarNames.submit_a_complaint" to="/SubmitAComplaint"></md-tab>
               <!--<md-tab id="tab-create" v-bind:md-label="toolbarNames.register" to="/CreateAUser"></md-tab>-->
@@ -124,7 +124,7 @@ import { cookies } from '../src/mixins/cookies'
   }
 
   p {
-    text-align: left!important;
+    text-align: left
   }
 
   ul, ol {
@@ -160,6 +160,18 @@ import { cookies } from '../src/mixins/cookies'
 
   .md-toolbar .md-tabs {
     margin: 0!important;
+  }
+
+  .md-tabs {
+    margin: 0!important;
+    alignment: right!important;
+  }
+
+  #localization {
+    background-color: #ffffff !important;
+  }
+
+  .md-raised {
   }
 
   .md-toolbar-section-start {

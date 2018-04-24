@@ -1,7 +1,12 @@
 <template>
   <div>
-    <br />
-    <br />
+    <template v-if="!(tokenExists)">
+      <h2>{{$lang.SubmitAComplaintLang.logged_in_warn2}}</h2>
+      <router-link to="Login">{{$lang.SubmitAComplaintLang.log_in_here}}</router-link>
+    </template>
+    <template v-if="(tokenExists)">
+      <h2>{{$lang.SubmitAComplaintLang.logged_in_as}} {{ myCredentials.username }}</h2>
+    </template>
     <md-field>
       <label>Category:</label>
       <md-select id="categoryBox" v-model="querySet.category">
@@ -22,6 +27,14 @@
       </md-select>
     </md-field>
     <md-field>
+      <label>Datetime Start: </label>
+      <md-datepicker id="datetimeStartBox" v-model="querySet.startDatetime" :md-open-on-focus="false"/>
+    </md-field>
+    <md-field>
+      <label>Datetime End: </label>
+      <md-datepicker id="datetimeEndBox" v-model="querySet.endDatetime" :md-open-on-focus="false"/>
+    </md-field>
+    <md-field>
       <label>Location (Search by Address):</label>
       <md-input id="addressBox" v-model="querySet.location"></md-input>
       <span class="md-helper-text">e.g. Regnbuepladsen 7</span>
@@ -31,18 +44,16 @@
       <md-input id="rangeBox" v-model="querySet.range"></md-input>
       <span class="md-helper-text">e.g. 500</span>
     </md-field>
-    <md-field>
-      <label>Datetime Start: </label>
-      <md-datepicker id="datetimeStartBox" v-model="querySet.startDatetime" :md-open-on-focus="false"/>
-    </md-field>
-    <md-field>
-      <label>Datetime End: </label>
-      <md-datepicker id="datetimeEndBox" v-model="querySet.endDatetime" :md-open-on-focus="false"/>
-    </md-field>
-    <!--<p>Lat: {{coords.latitude}}</p>-->
-    <!--<p>Long: {{coords.longitude}}</p>-->
+    <p>Latitude: {{coords.latitude}}</p>
+    <p>Longitude: {{coords.longitude}}</p>
+    <md-button class="md-raised" v-on:click="searchAddressOnMap(querySet.location)">{{$lang.SubmitAComplaintLang.search}}</md-button>
+    <md-button class="md-raised" v-on:click="resetMarker()">{{$lang.SubmitAComplaintLang.reset}}</md-button>
+    <leaflet-map id="myMap"
+                 v-bind:newCoords="{latitude : coords.latitude, longitude : coords.longitude, range : querySet.range}"
+                 v-on:coordsChanged="onDragMapCoords"></leaflet-map>
+    <br />
     <md-button class="md-raised md-primary" v-on:click="onResetClicked()">Reset</md-button>
-    <md-button class="md-raised md-primary" v-on:click="allStuff()">Everything</md-button>
+    <md-button class="md-raised md-primary" v-on:click="allStuff()">Download CSV</md-button>
   </div>
 </template>
 
@@ -50,11 +61,20 @@
 /* eslint-disable */
   import {OpenStreetMapProvider} from 'leaflet-geosearch'
   import {cookies} from '../mixins/cookies'
+  import LeafletMap from './LeafletMap.vue'
+
   export default {
     name: "DataSet",
     mixins: [cookies],
+    components: {
+      'leaflet-map': LeafletMap
+    },
     data() {
       return {
+        myCredentials: {
+          username: '',
+          token: ''
+        },
         querySet: {
           category: '',
           sub_category: '',
@@ -64,9 +84,11 @@
           endDatetime: null
         },
         coords: {
-          latitude: 0.0,
-          longitude: 0.0
+          latitude: 55.681078,
+          longitude: 12.565966,
         },
+        tokenExists: false, // Indicatees whether or not a credential cookie was found.
+        mapInteracted: false,
         myJSONResponse: null,
         categories: [
           {
@@ -119,6 +141,27 @@
         doStuff(doStuff2, newQuery, this)
       },
 
+      onDragMapCoords: function (newCoords) {
+        this.coords.latitude = newCoords.latCoord
+        this.coords.longitude = newCoords.longCoord
+        this.mapInteracted = true
+      },
+
+      async searchAddressOnMap (address) {
+        const results = await this.provider.search({query: address})
+        this.coords.latitude = results[0].y
+        this.coords.longitude = results[0].x
+        // return {
+        //   long: results[0].x,
+        //   lat: results[0].y
+        // }
+      },
+      // Update the latitude and longitude values on this vue object based off of the values passed in
+      // Used specifically for the map object.
+      resetMarker: function () {
+        this.coords.latitude = 55.681078
+        this.coords.longitude = 12.565966
+      },
       async searchAddress2 (address, parScope) {
         // search
         // const address = document.getElementById('addressBox').value
@@ -127,10 +170,6 @@
           long: results[0].x,
           lat: results[0].y
         }
-        // const coords = {
-        //   longitude: results[0].x,
-        //   latitude: results[0].y
-        // }
       },
 
       // Turns provided address and range into lat/long pairs
@@ -395,9 +434,21 @@
           }) // Select the token string from the object.
       },
     },
+    updated: function () {
+      this.tokenExists = cookies.methods.checkForToken(this)
+      if (this.tokenExists) {
+        this.myCredentials.username = cookies.methods.getCookie('username')
+        this.myCredentials.token = cookies.methods.getCookie('token')
+      }
+    },
     mounted: function () {
       // setup
       this.provider = new OpenStreetMapProvider()
+      this.tokenExists = cookies.methods.checkForToken(this)
+      if (this.tokenExists) {
+        this.myCredentials.username = cookies.methods.getCookie('username')
+        this.myCredentials.token = cookies.methods.getCookie('token')
+      }
     }
   }
 </script>

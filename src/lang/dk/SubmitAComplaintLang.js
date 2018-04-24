@@ -1,6 +1,7 @@
 module.exports = {
   submit_a_complaint: 'Indsend en klage',
   logged_in_warn: 'Du skal være logget ind for at indsende en klage',
+  logged_in_warn2: 'Du skal være logget ind',
   log_in_here: 'Du kan logge ind her',
   logged_in_as: 'Du er logget ind som: ',
   press_next: 'tryk på den næste knap', // Gtranslated
@@ -33,5 +34,11 @@ module.exports = {
   private_celebration: 'Privatfest',
   banging_pounding: 'Dunkende lyd',
   bar_restaurant: 'Bar/Restaurant',
-  construction: 'Byggeri'
+  construction: 'Byggeri',
+  your_complaint_categorized: 'Din rapport er blevet indsamlet og blev kategoriseret som ', // Gtranslated
+  file_formal_police: 'For at indgive en formel klage, ring venligst til politiet på 114.', // Gtranslated
+  police_can_help_with: 'Politiet kan hjælpe med støj relateret til:', // Gtranslated
+  file_formal_noise_unit: 'For at indsende en formel klage, kontakt venligst støjenheden eller støjvagten', // Gtranslated
+  file_formal_noise_form: 'Alternativt kan du indsende en klage via kommunens støjbekræftelse', // Gtranslated
+  municipality_can_help_with: 'Kommunen kan hjælpe med støj relateret til:' // Gtranslated
 }
