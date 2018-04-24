@@ -11,12 +11,12 @@
             <span id="loginName" v-if="myCredentials.username.length > 0">{{$lang.ToolbarLang.logged_in}}{{ myCredentials.username }}</span>
           </div>
           <div class="md-toolbar-row">
-            <md-tabs class="md-primary" md-alignment="centered" md-sync-route>
+            <md-tabs class="md-primary" md-sync-route>
               <md-tab id="tab-menu" v-bind:md-label="toolbarNames.menu" to="/"></md-tab>
               <md-tab id="tab-submit" v-bind:md-label="toolbarNames.submit_a_complaint" to="/SubmitAComplaint"></md-tab>
-              <md-tab id="tab-create" v-bind:md-label="toolbarNames.register" to="/CreateAUser"></md-tab>
+              <!--<md-tab id="tab-create" v-bind:md-label="toolbarNames.register" to="/CreateAUser"></md-tab>-->
               <md-tab id="tab-about" v-bind:md-label="toolbarNames.about" to="/About"></md-tab>
-              <md-tab id="tab-login" v-bind:md-label="accountTabLabel" to="/Login"></md-tab>
+              <!--<md-tab id="tab-login" v-bind:md-label="accountTabLabel" to="/Login"></md-tab>-->
               <!--<md-tab id="tab-dataset" md-label="DataSet" to="/DataSet"></md-tab>-->
             </md-tabs>
           </div>
@@ -99,7 +99,6 @@ import { cookies } from '../src/mixins/cookies'
     },
     mounted : function () {
       if (cookies.methods.getCookie('language').length > 0) {
-        alert(cookies.methods.getCookie('language'))
         this.$lang.setLang(cookies.methods.getCookie('language'))
         this.curLanguage = cookies.methods.getCookie('language')
       } else {

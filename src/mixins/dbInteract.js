@@ -92,35 +92,62 @@ export const dbInteract = {
           }
         })
     },
-    postToComplaints (apiLoc, newComplaintData, onSucc, onFail, parentScope) {
+    postToComplaints (apiLoc, newComplaintData, onSucc, onFail, parentScope, myCredentials) {
       const complaintForm = this.compileComplaint(newComplaintData)
-      var myAuth = 'Token ' + JSON.parse(cookies.methods.getCookie('token'))
-      fetch(apiLoc + '/complaints/', {
-        mode: 'cors',
-        headers: {
-          'Authorization': myAuth
-        },
-        body: complaintForm,
-        method: 'POST'
-      }).then(this.handleErrors)
-        .then(response => {
-          if (typeof onSucc === 'function') {
-            onSucc(response, parentScope)
+
+      var ifSucc = function (response, parentScope) {
+        var handleErrors = function (response) {
+          if (!response.ok) {
+            throw Error(response.statusText)
           }
-        })
-        .catch(error => {
-          if (typeof onFail === 'function') {
-            onFail(error, parentScope)
-          }
-        })
+          return response
+        }
+        var myAuth = 'Token ' + JSON.parse(response)
+        fetch(apiLoc + '/complaints/', {
+          mode: 'cors',
+          headers: {
+            'Authorization': myAuth
+          },
+          body: complaintForm,
+          method: 'POST'
+        }).then(handleErrors)
+          .then(response => {
+            if (typeof onSucc === 'function') {
+              onSucc(response, parentScope)
+            }
+          })
+          .catch(error => {
+            if (typeof onFail === 'function') {
+              onFail(error, parentScope)
+            }
+          })
+      }
+
+      var ifFail = function (response, parentScope) {
+        alert('error: Complaint wasn\'t submitted: ' + response)
+        console.log(response)
+      }
+
+      if (cookies.methods.getCookie('token')) {
+        ifSucc(cookies.methods.getCookie('token'))
+      } else {
+        this.postToGetToken(apiLoc, myCredentials, ifSucc, ifFail, parentScope, false)
+      }
     },
     postToGetToken (apiLoc, credentials, onSucc, onFail, parentScope, rememberMe) {
+      var handleErrors = function (response) {
+        if (!response.ok) {
+          throw Error(response.statusText)
+        }
+        return response
+      }
+
       var credentialsForm = this.compileCredentials(credentials)
       fetch(apiLoc + '/get-token/', {
         mode: 'cors',
         body: credentialsForm,
         method: 'POST'
-      }).then(this.handleErrors)
+      }).then(handleErrors)
         .then(response => response.json()) // Convert the token response into a JSON object
         .then(JSONresponse => JSON.stringify(JSONresponse.token)) // Select the token string from the object.
         .then(response => {

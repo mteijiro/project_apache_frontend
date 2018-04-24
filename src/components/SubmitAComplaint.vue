@@ -3,16 +3,17 @@
     <h1>{{$lang.SubmitAComplaintLang.submit_a_complaint}}</h1>
     <md-steppers v-bind:md-active-step="formSteps[formIndex]" md-linear>
       <md-step v-bind:id="formSteps[0]" v-on:click="formIndex=0" v-bind:md-description="formIndex[0]"
-               v-bind:md-label="formIndex[0]" v-bind:md-done="myCredentials.token.length > 0">
+               v-bind:md-label="formIndex[0]" v-bind:md-done="formIndex > 0">
         <template v-if="formIndex === 0">
-          <template v-if="!(tokenExists)">
-            <h2>{{$lang.SubmitAComplaintLang.logged_in_warn}}</h2>
-            <router-link to="Login">{{$lang.SubmitAComplaintLang.log_in_here}}</router-link>
-          </template>
-          <template v-if="(tokenExists)">
-            <h2>{{$lang.SubmitAComplaintLang.logged_in_as}} {{ myCredentials.username }}</h2>
+          <!--<template v-if="!(tokenExists)">-->
+            <!--<h2>{{$lang.SubmitAComplaintLang.logged_in_warn}}</h2>-->
+            <!--<router-link to="Login">{{$lang.SubmitAComplaintLang.log_in_here}}</router-link>-->
+          <!--</template>-->
+          <!--<template v-if="(tokenExists)">-->
+            <!--<h2>{{$lang.SubmitAComplaintLang.logged_in_as}} {{ myCredentials.username }}</h2>-->
+          <h2>Submit A Noise Complaint</h2>
             <span style="text-align: center;">{{$lang.SubmitAComplaintLang.press_next}}</span>
-          </template>
+          <!--</template>-->
         </template>
       </md-step>
       <md-step v-bind:id="formSteps[1]" v-on:click="formIndex=1" v-bind:md-label="formIndex[1]"
@@ -115,7 +116,7 @@
       <template v-if="formIndex > 0 && formIndex < endFormIndex">
         <md-button class="md-raised md-primary" v-on:click="backButtonPressed()">{{$lang.SubmitAComplaintLang.back}}</md-button>
       </template>
-      <template v-if="formIndex < endFormIndex - 1 && (myCredentials.username.length > 0)">
+      <template v-if="formIndex < endFormIndex - 1">
         <md-button id="nextButton" class="md-raised md-primary" v-on:click="nextButtonPressed()">{{$lang.SubmitAComplaintLang.next}}</md-button>
       </template>
       <template v-if="formIndex === endFormIndex - 1">
@@ -157,7 +158,8 @@ export default {
         audioUP: null
       },
       myCredentials: { // User credential data used for authentication and sending to the server
-        username: '',
+        username: 'anonymous',
+        password: 'placeholder',
         token: ''
       },
       returnParty: 'Police', // Used to identify which party the complaint should be sent to.
@@ -328,7 +330,7 @@ export default {
       const onFail = function (error, parScope) {
         console.log(error)
       }
-      dbInteract.methods.postToComplaints(this.$api, newComplaint, onSucc, onFail, this)
+      dbInteract.methods.postToComplaints(this.$api, newComplaint, onSucc, onFail, this, myCredentials)
     },
     // Refresh the toolbar header names on the toolbar to reflect the detected language
     refreshCategoryNames () {
