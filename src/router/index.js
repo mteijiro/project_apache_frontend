@@ -5,6 +5,7 @@ import SubmitAComplaint from '@/components/SubmitAComplaint'
 import About from '@/components/About'
 import CreateAUser from '@/components/CreateAUser'
 import Login from '@/components/Login'
+import DataSet from '@/components/DataSet'
 
 Vue.use(Router)
 
@@ -34,6 +35,11 @@ export default new Router({
       path: '/Login',
       name: 'Login',
       component: Login
+    },
+    {
+      path: '/DataSet',
+      name: 'DataSet',
+      component: DataSet
     }
     // {
     //   path: '/LeafletMap',

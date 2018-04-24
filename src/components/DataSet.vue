@@ -37,14 +37,20 @@
       <label>Datetime End: </label>
       <md-datepicker id="datetimeEndBox" v-model="querySet.endDatetime" :md-open-on-focus="false"/>
     </md-field>
-
+    <p>Lat: {{coords.latitude}}</p>
+    <p>Long: {{coords.longitude}}</p>
+    <md-button class="md-raised md-primary" v-on:click="getCoords()">Get Coords</md-button>
     <md-button class="md-raised md-primary" v-on:click="onResetClicked()">Reset</md-button>
-    <md-button class="md-raised md-primary" v-on:click="onDownloadClicked()">Download CSV</md-button>
+    <md-button class="md-raised md-primary" v-on:click="onPrepareClicked()">Prepare Download</md-button>
+    <md-button class="md-raised md-primary" v-on:click="onDownloadClicked(myJSONResponse)">Download CSV</md-button>
+    <p>JSON: {{myJSONResponse}}</p>
   </div>
 </template>
 
 <script>
 /* eslint-disable */
+  import {OpenStreetMapProvider} from 'leaflet-geosearch'
+
   export default {
     name: "DataSet",
     data() {
@@ -57,6 +63,11 @@
           startDatetime: null,
           endDatetime: null
         },
+        coords: {
+          latitude: 0.0,
+          longitude: 0.0
+        },
+        myJSONResponse: null,
         categories: [
           {
             key: 1,
@@ -94,49 +105,53 @@
       }
     },
     methods: {
+
+      getCoords() {
+        this.searchAddress(this.querySet.location)
+      },
+      // Search the given address using the provider defined (Google, OpenStreetmaps, etc.)
+      async searchAddress(address) {
+        // search
+        // const address = document.getElementById('addressBox').value
+        const results = await this.provider.search({query: address})
+        this.coords.longitude = results[0].x
+        this.coords.latitude = results[0].y
+        // const coords = {
+        //   longitude: results[0].x,
+        //   latitude: results[0].y
+        // }
+      },
       // Turns provided address and range into lat/long pairs
       convertLocation(location, range) {
 
         // TODO Pull this in from OpenStreetMaps
-        var longitude = 0.0
-        var latitude = 0.0
-
-        var m_per_deg_lat = 111132.92 -
-          (559.822 * Math.cos( 2 * latMid )) +
-          (1.175 * Math.cos( 4 * latMid )) -
-          (0.0023 * Math.cos( 6 * latMid ))
-        var m_per_deg_lon = 111412.84 * Math.cos( latMid ) -
-          93.5 * Math.cos( 3 * longMid ) +
-          118 * Math.cos( 5 * longMid )
+        // const coords = this.searchAddress(location)
+        var longitude = this.coords.longitude
+        var latitude = this.coords.latitude
 
         var deg_lat_per_m = range / 111111 // Deviation in degrees
         var deg_long_per_m = range / (111111 * Math.cos(latitude)) // Deviation in degrees
 
-        var locationArray = [latitude - deg_lat_per_m, latitude + deg_lat_per_m,
-          longitude - deg_long_per_m, longitude + deg_long_per_m]
+        var locationArray = [+latitude - +deg_lat_per_m, +latitude + +deg_lat_per_m,
+          +longitude - +deg_long_per_m, +longitude + +deg_long_per_m]
+
+        console.log(locationArray)
 
         return locationArray
       },
 
       // Builds the string query
       buildQuery(category, sub_category, lat_low, lat_high, long_low, long_high, startDatetime, endDatetime) {
+        if (category === 'Street Noise') {
+          category = 'Street%20Noise'
+        }
+        if (sub_category === 'Loud Music/Party') {
+          sub_category = 'Loud%20Music/Party'
+        }
         var queryString = "/complaints/?category=" + category + "&sub_category=" + sub_category +
           "&timestamp_0=" + startDatetime + "&timestamp_1=" + endDatetime +
-          "latitude_0=" + lat_low + "&latitude_1=" + lat_high + "&longitude_0=" + long_low + "&longitude_1=" + long_high
-
+          "&latitude_0=" + lat_low + "&latitude_1=" + lat_high + "&longitude_0=" + long_low + "&longitude_1=" + long_high
         return queryString
-      },
-
-      // Converts query's returned JSON to CSV
-      jsonToCSV(json) {
-        const items = json.items
-        const replacer = (key, value) => value === null ? '' : value // specify how you want to handle null values here
-        const header = Object.keys(items[0])
-        let csv = items.map(row => header.map(fieldName => JSON.stringify(row[fieldName], replacer)).join(','))
-        csv.unshift(header.join(','))
-        csv = csv.join('\r\n')
-
-        return csv
       },
 
       // Reset the form
@@ -149,9 +164,7 @@
         this.querySet.endDatetime = null
       },
 
-      // Query DB and download CSV
-      onDownloadClicked() {
-
+      onPrepareClicked() {
         var startDateTime = this.querySet.startDatetime.getFullYear() + "-" +
           this.querySet.startDatetime.getMonth() + "-" +
           this.querySet.startDatetime.getDate() + "+00:00:00"
@@ -159,30 +172,120 @@
           this.querySet.endDatetime.getMonth() + "-" +
           this.querySet.endDatetime.getDate() + "+23:59:59"
 
-        var locationArray = convertLocation(this.querySet.location, this.querySet.range)
+        var locationArray = this.convertLocation(this.querySet.location, this.querySet.range)
 
-        var queryString = buildQuery(this.querySet.category, this.querySet.sub_category,
+        var queryString = this.buildQuery(this.querySet.category, this.querySet.sub_category,
           locationArray[0], locationArray[1], locationArray[2], locationArray[3],
           startDateTime, endDateTime)
 
         // Reset form
-        onResetClicked()
+        this.onResetClicked()
 
         // TODO Perform query here
-        var json
+        var json = this.getData(this.getCookie('token'), queryString, this)
 
+        console.log(queryString)
+      },
+      convertToCSV(objArray) {
+        var array = typeof objArray != 'object' ? JSON.parse(objArray) : objArray;
+        var str = '';
+
+        for (var i = 0; i < array.length; i++) {
+          var line = '';
+          for (var index in array[i]) {
+            if (line != '') line += ','
+
+            line += array[i][index];
+          }
+
+          str += line + '\r\n';
+        }
+
+        return str;
+      },
+      exportCSVFile(headers, items, fileTitle) {
+        if (headers) {
+          items.unshift(headers);
+        }
+
+        // Convert Object to JSON
+        var jsonObject = JSON.stringify(items);
+
+        var csv = this.convertToCSV(jsonObject);
+
+        var exportedFilename = fileTitle + '.csv' || 'export.csv';
+
+        var blob = new Blob([csv], {type: 'text/csv;charset=utf-8;'});
+        if (navigator.msSaveBlob) { // IE 10+
+          navigator.msSaveBlob(blob, exportedFilename);
+        } else {
+          var link = document.createElement("a");
+          if (link.download !== undefined) { // feature detection
+            // Browsers that support HTML5 download attribute
+            var url = URL.createObjectURL(blob);
+            link.setAttribute("href", url);
+            link.setAttribute("download", exportedFilename);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+          }
+        }
+      },
+      // Query DB and download CSV
+      onDownloadClicked(json) {
         // Take query, convert to CSV
-        var csv = jsonToCSV(json)
 
-        // Return CSV
-        var encodedUri = encodeURI(csv)
-        var link = document.createElement("a")
-        link.setAttribute("href", encodedUri)
-        link.setAttribute("download", "customers.csv")
-        document.body.appendChild(link) // Required for FF
-        link.click()
-        document.body.removeChild(link)
+        var fileTitle = 'data';
+
+        var headers = {
+          id: 'Complaint #',
+          timestamp: "Date/Time",
+          owner: "User",
+          comments: "Comments",
+          category: "Category",
+          sub_category: "Sub-Category",
+          latitude: "Latitude",
+          longitude: "Longitude",
+          image: "Image",
+          audio: "Audio"
+        };
+
+        this.exportCSVFile(headers, json, fileTitle);
+      },
+      getData(token, queryString, parScope) {
+        alert(token)
+        fetch(this.$api + /*'/complaints/'*/ queryString, {
+          mode: 'cors',
+          headers: {
+            'Authorization': 'Token ' + JSON.parse(token)
+          },
+          method: 'GET'
+        }).then(response => response.json()) // Convert the token response into a JSON object
+          .then(JSONresponse => {
+            parScope.myJSONResponse = JSONresponse
+          }) // Select the token string from the object.
+      },
+      getCookie(cname) {
+        var name = cname + '='
+        var decodedCookie = decodeURIComponent(document.cookie)
+        var ca = decodedCookie.split(';')
+        for (var i = 0; i < ca.length; i++) {
+          var c = ca[i]
+          while (c.charAt(0) === ' ') {
+            c = c.substring(1)
+          }
+          if (c.indexOf(name) === 0) {
+            console.log(c.substring(name.length, c.length))
+            return c.substring(name.length, c.length)
+          }
+        }
+        return ''
       }
+    },
+    mounted: function () {
+      // setup
+      this.provider = new OpenStreetMapProvider()
     }
   }
 </script>

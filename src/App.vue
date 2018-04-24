@@ -17,6 +17,7 @@
               <md-tab id="tab-create" v-bind:md-label="toolbarNames.register" to="/CreateAUser"></md-tab>
               <md-tab id="tab-about" v-bind:md-label="toolbarNames.about" to="/About"></md-tab>
               <md-tab id="tab-login" v-bind:md-label="accountTabLabel" to="/Login"></md-tab>
+              <md-tab id="tab-dataset" md-label="DataSet" to="/DataSet"></md-tab>
             </md-tabs>
           </div>
         </md-app-toolbar>
