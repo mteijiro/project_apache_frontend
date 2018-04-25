@@ -8,7 +8,7 @@ module.exports = {
   // Version 1.0 Changes
   intro_paragraph2: 'Welcome to the Stop Støj App! This app serves two purposes: to help inform people about Copenhagen’s noise complaint process and to collect nightlife noise complaint data. These data will be used to build a model of the nightlife noise issues in inner city Copenhagen. This model can provide valuable nightlife insight to the police and city officials, potentially improving nightlife management processes and living conditions.',
   secondary_paragraph: 'The app will walk you through the process of submitting a noise report. This report will be filed with Miljøpunkt Indre By & Christianshavn for data analysis and advocacy purposes. Upon submission, the app will direct you towards the proper authority and automatically give you contact information so you can request immediate action on the incident.',
-  security_paragraph: 'Please note that this app is not completed yet. Please refrain from submitting any personal information in a report as we cannot currently guarantee that the data will remain completely secured.',
+  security_paragraph: 'Please refrain from submitting any personal information in a report as we cannot currently guarantee that the data will remain completely secured.',
   terms_of_service: 'Please read our Terms of Service here',
   cookie_policy: 'Cookie Policy',
   privacy_policy: 'Privacy Policy'
