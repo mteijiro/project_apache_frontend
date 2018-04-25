@@ -6,6 +6,11 @@
     <p>{{$lang.MainMenu.secondary_paragraph}}</p>
     <h2>{{$lang.MainMenu.disclaimer}}</h2>
     <p>{{$lang.MainMenu.security_paragraph}}</p>
+    <router-link to="TermsOfService">{{$lang.MainMenu.terms_of_service}}</router-link>
+    <br />
+    <router-link to="CookiePolicy">{{$lang.MainMenu.cookie_policy}}</router-link>
+    <br />
+    <router-link to="PrivacyPolicy">{{$lang.MainMenu.privacy_policy}}</router-link>
   </div>
 </template>
 

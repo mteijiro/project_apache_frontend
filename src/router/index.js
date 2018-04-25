@@ -6,6 +6,9 @@ import About from '@/components/About'
 import CreateAUser from '@/components/CreateAUser'
 import Login from '@/components/Login'
 import DataSet from '@/components/DataSet'
+import TermsOfService from '@/components/TermsOfService'
+import CookiePolicy from '@/components/CookiePolicy'
+import PrivacyPolicy from '@/components/PrivacyPolicy'
 
 Vue.use(Router)
 
@@ -40,6 +43,21 @@ export default new Router({
       path: '/DataSet',
       name: 'DataSet',
       component: DataSet
+    },
+    {
+      path: '/TermsOfService',
+      name: 'TermsOfService',
+      component: TermsOfService
+    },
+    {
+      path: '/CookiePolicy',
+      name: 'CookiePolicy',
+      component: CookiePolicy
+    },
+    {
+      path: '/PrivacyPolicy',
+      name: 'PrivacyPolicy',
+      component: PrivacyPolicy
     }
     // {
     //   path: '/LeafletMap',

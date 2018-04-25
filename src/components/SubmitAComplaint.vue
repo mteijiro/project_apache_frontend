@@ -20,6 +20,7 @@
               </md-option>
             </md-select>
           </md-field>
+        <template v-if="!isNoiseGuard(newComplaint.category)">
           <h2 align="left"><u>{{$lang.SubmitAComplaintLang.sub_category}}</u></h2>
           <md-field>
             <label>{{$lang.SubmitAComplaintLang.sub_category}}</label>
@@ -30,6 +31,7 @@
               </md-option>
             </md-select>
           </md-field>
+        </template>
       </md-step>
       <md-step v-bind:id="formSteps[2]" v-on:click="formIndex=2" v-bind:md-label="formIndex[2]"
                v-bind:md-done="mapInteracted === true">
@@ -210,6 +212,11 @@ export default {
           key: 3,
           displayName: '', // this.$lang.SubmitAComplaintLang.banging_pounding,
           value: 'Banging/Pounding'
+        },
+        {
+          key: 4,
+          displayName: 'N/A',
+          value: 'N/A'
         }
       ],
       noiseGuardCategories: ['Bar/Restaurant', 'Construction'] // Category values that should result in a noise guard redirect
@@ -230,6 +237,7 @@ export default {
       var ngc = this.noiseGuardCategories
       for (var i = 0; i < ngc.length; i++) {
         if (category === ngc[i]) {
+          this.newComplaint.sub_category = this.sub_categories[3].value
           return true
         }
       }

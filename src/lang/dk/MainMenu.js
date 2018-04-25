@@ -8,5 +8,8 @@ module.exports = {
   // Version 1.0 Changes, NOTE: Google Translated
   intro_paragraph2: 'Velkommen til det Stop Støj App! Denne app tjener to formål: at hjælpe med at informere om Københavns støj rapportering proces og at indsamle nattelivstøjklagedata. Disse data vil blive brugt til at opbygge en model af nattelivstøjsproblemerne i København. Denne model kan give værdifuld natteliv indsigt til politiet og byens embedsmænd, der potentielt forbedrer nattelivsforvaltningsprocesser og levevilkår.',
   secondary_paragraph: 'App\'en vil gå igennem processen med at indsende en støjrapport. Denne rapport vil blive indleveret hos Miljøpunkt Indre By & Christianshavn til dataanalyse og advokatformål. Efter indgivelsen vil appen henvise dig til den rette myndighed og automatisk give dig kontaktoplysninger, så du kan anmode om øjeblikkelig handling af hændelsen.',
-  security_paragraph: 'Bemærk venligst, at denne app endnu ikke er gennemført. Undgå at indsende personlige oplysninger i en rapport, da vi ikke i øjeblikket kan garantere, at dataene forbliver fuldstændigt sikrede.'
+  security_paragraph: 'Bemærk venligst, at denne app endnu ikke er gennemført. Undgå at indsende personlige oplysninger i en rapport, da vi ikke i øjeblikket kan garantere, at dataene forbliver fuldstændigt sikrede.',
+  terms_of_service: 'Læs venligst vores servicevilkår her', // Gtranslated
+  cookie_policy: 'Cookie Policy',
+  privacy_policy: 'Fortrolighedspolitik'
 }

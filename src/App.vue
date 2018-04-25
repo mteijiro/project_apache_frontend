@@ -135,6 +135,13 @@ import { cookies } from '../src/mixins/cookies'
     font-size: 16px!important;
   }
 
+  #app > div > div > main > div.md-toolbar.md-app-toolbar.md-large.md-dense.md-primary.md-theme-default.md-elevation-4.md-no-elevation.md-fixed-last-active > div:nth-child(2) > div {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+  }
+
   #app {
     font-family: 'Avenir', Helvetica, Arial, sans-serif;
     -webkit-font-smoothing: antialiased;
