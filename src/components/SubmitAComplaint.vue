@@ -360,7 +360,7 @@ export default {
       this.sub_categories[0].displayName = this.$lang.SubmitAComplaintLang.loud_music_party
       this.sub_categories[1].displayName = this.$lang.SubmitAComplaintLang.loud_talking_shouting
       this.sub_categories[2].displayName = this.$lang.SubmitAComplaintLang.banging_pounding
-    }
+    },
   },
   created: function () {
   },
@@ -375,6 +375,14 @@ export default {
     if (this.tokenExists) {
       this.myCredentials.username = cookies.methods.getCookie('username')
       this.myCredentials.token = cookies.methods.getCookie('token')
+    } else {
+      var onSucc = function (token, parScope) {
+        parScope.myCredentials.token = JSON.parse(token)
+      }
+      var onFail = function (token, parScope) {
+        alert('Error: Could not validate user')
+      }
+      dbInteract.methods.postToGetToken(this.$api, this.myCredentials, onSucc, onFail, this, false)
     }
   }
 }

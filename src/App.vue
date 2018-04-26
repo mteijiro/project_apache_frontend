@@ -8,7 +8,7 @@
               <span class="md-title">{{$lang.ToolbarLang.app_name}}</span>
             </div>
             <md-button id="localization" class="md-raised" v-on:click="changeLanguage()">{{$lang.ToolbarLang.language}}{{curLanguage}} </md-button>
-            <span id="loginName" v-if="myCredentials.username.length > 0">{{$lang.ToolbarLang.logged_in}}{{ myCredentials.username }}</span>
+            <!--<span id="loginName" v-if="myCredentials.username.length > 0">{{$lang.ToolbarLang.logged_in}}{{ myCredentials.username }}</span>-->
           </div>
           <div class="md-toolbar-row">
             <md-tabs class="md-primary"  md-sync-route>

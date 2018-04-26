@@ -52,27 +52,32 @@
                  v-bind:newCoords="{latitude : coords.latitude, longitude : coords.longitude, range : querySet.range}"
                  v-on:coordsChanged="onDragMapCoords"></leaflet-map>
     <br />
-    <md-button class="md-raised md-primary" v-on:click="onResetClicked()">Reset</md-button>
-    <md-button class="md-raised md-primary" v-on:click="allStuff()">Download CSV</md-button>
+    <md-button class="md-raised md-primary" v-on:click="onResetClicked()">Reset Filter</md-button>
+    <md-button class="md-raised md-primary" v-on:click="allStuff()">Filtered Download</md-button>
+    <md-button class="md-raised md-primary" v-on:click="downloadAll()">Download Everything</md-button>
+    <p class="errorMsg" v-if="invalidCoords">Error: Please insure your coordinates are in Copenhagen and your range is greater than 0</p>
+    <p class="errorMsg" v-if="invalidDate">You did not select date and time. Will not filter by time</p>
   </div>
 </template>
 
 <script>
 /* eslint-disable */
   import {OpenStreetMapProvider} from 'leaflet-geosearch'
+  import { dbInteract } from '../../src/mixins/dbInteract'
   import {cookies} from '../mixins/cookies'
   import LeafletMap from './LeafletMap.vue'
 
   export default {
     name: "DataSet",
-    mixins: [cookies],
+    mixins: [dbInteract, cookies],
     components: {
       'leaflet-map': LeafletMap
     },
     data() {
       return {
-        myCredentials: {
-          username: '',
+        myCredentials: { // User credential data used for authentication and sending to the server
+          username: 'anonymous',
+          password: 'placeholder',
           token: ''
         },
         querySet: {
@@ -90,6 +95,8 @@
         tokenExists: false, // Indicatees whether or not a credential cookie was found.
         mapInteracted: false,
         myJSONResponse: null,
+        invalidCoords: false,
+        invalidDate: false,
         categories: [
           {
             key: 1,
@@ -128,10 +135,23 @@
     },
     methods: {
 
+      downloadAll () {
+        function onPrepareClicked3 (parScope, onSucc) {
+          // Reset form
+          parScope.onResetClicked()
+          // TODO Perform query here
+          parScope.getData2(cookies.methods.getCookie('token'), '/complaints/', parScope, onSucc)
+        }
+        function doStuff3 (json, parScope) {
+          parScope.onDownloadClicked2(json)
+        }
+        onPrepareClicked3(this, doStuff3)
+      },
       allStuff () {
         function doStuff (callback, myQuery, parScope) {
-          parScope.searchAddress2(myQuery.location, parScope)
-            .then(newCoords => parScope.onPrepareClicked2(myQuery, newCoords, parScope, callback))
+          // parScope.searchAddress2(myQuery.location, parScope)
+          //   .then(newCoords =>
+            parScope.onPrepareClicked2(myQuery, parScope.coords, parScope, callback)
           // .then(returnCoords => callback(returnCoords, parScope))
         }
         function doStuff2 (json, parScope) {
@@ -149,8 +169,10 @@
 
       async searchAddressOnMap (address) {
         const results = await this.provider.search({query: address})
-        this.coords.latitude = results[0].y
-        this.coords.longitude = results[0].x
+        if (results !== undefined) {
+          this.coords.latitude = results[0].y
+          this.coords.longitude = results[0].x
+        }
         // return {
         //   long: results[0].x,
         //   lat: results[0].y
@@ -166,21 +188,31 @@
         // search
         // const address = document.getElementById('addressBox').value
         const results = await parScope.provider.search({query: address})
-        return {
-          long: results[0].x,
-          lat: results[0].y
+        if (results[0] !== undefined) {
+          return {
+            long: results[0].x,
+            lat: results[0].y
+          }
+        } else {
+          // alert('Couldn\'t find that address!')
+          return {
+            long: parScope.coords.longitude,
+            lat: parScope.coords.latitude
+          }
         }
       },
-
       // Turns provided address and range into lat/long pairs
       convertLocation2 (coords, range) {
         // TODO Pull this in from OpenStreetMaps
         // const coords = this.searchAddress(location)
-        var longitude = coords.long
-        var latitude = coords.lat
+        var longitude = coords.longitude
+        var latitude = coords.latitude
         var degLatPerM = range / 111111 // Deviation in degrees
         var degLongPerM = range / (111111 * Math.cos(latitude)) // Deviation in degrees
-
+        console.log(longitude)
+        console.log(latitude)
+        console.log(degLatPerM)
+        console.log(degLongPerM)
         var locationArray = [+latitude - +degLatPerM, +latitude + +degLatPerM,
           +longitude - +degLongPerM, +longitude + +degLongPerM]
 
@@ -190,28 +222,45 @@
 
       onPrepareClicked2 (myQuery, coords, parScope, onSucc) {
         console.log(coords)
-        // Add 1 to the month because it uses 0 based indexing
-        const monthIndex1 = myQuery.startDatetime.getMonth() + 1
-        const monthIndex2 = myQuery.endDatetime.getMonth() + 1
-        // Compile the date strings
-        var startDateTime = myQuery.startDatetime.getFullYear() + '-' +
-          monthIndex1 + '-' +
-          myQuery.startDatetime.getDate() + '+00:00:00'
-        var endDateTime = myQuery.endDatetime.getFullYear() + '-' +
-          monthIndex2 + '-' +
-          myQuery.endDatetime.getDate() + '+23:59:59'
-        // Create an array with the 4 corner coordinates
-        var locationArray = parScope.convertLocation2(coords, myQuery.range)
-        console.log(locationArray)
-        // Compile the query string
-        var queryString = parScope.buildQuery(myQuery.category, myQuery.sub_category,
-          locationArray[0], locationArray[1], locationArray[2], locationArray[3],
-          startDateTime, endDateTime)
+        if (myQuery.range > 0 && coords.latitude > 55.65 && coords.latitude < 55.71 && coords.longitude < 12.66 && coords.longitude > 12.50) {
+          parScope.invalidCoords = false
+          var queryString = ''
+          // Create an array with the 4 corner coordinates
+          var locationArray = parScope.convertLocation2(coords, myQuery.range)
+          if (myQuery.startDatetime !== null && myQuery.endDatetime !== null) {
+            parScope.invalidDate = false
+              // Add 1 to the month because it uses 0 based indexing
+              const monthIndex1 = myQuery.startDatetime.getMonth() + 1
+              const monthIndex2 = myQuery.endDatetime.getMonth() + 1
+              // Compile the date strings
+              var startDateTime = myQuery.startDatetime.getFullYear() + '-' +
+                monthIndex1 + '-' +
+                myQuery.startDatetime.getDate() + '+00:00:00'
+              var endDateTime = myQuery.endDatetime.getFullYear() + '-' +
+                monthIndex2 + '-' +
+                myQuery.endDatetime.getDate() + '+23:59:59'
+            // Compile the query string
+            queryString = parScope.buildQuery(myQuery.category, myQuery.sub_category,
+                locationArray[0], locationArray[1], locationArray[2], locationArray[3],
+                startDateTime, endDateTime)
 
-        // Reset form
-        parScope.onResetClicked()
-        // TODO Perform query here
-        parScope.getData2(cookies.methods.getCookie('token'), queryString, parScope, onSucc)
+          } else {
+            parScope.invalidDate = true
+            // Compile the query string
+            queryString = parScope.buildQuery(myQuery.category, myQuery.sub_category,
+              locationArray[0], locationArray[1], locationArray[2], locationArray[3],
+              '', '')
+          }
+          console.log(locationArray)
+
+          // Reset form
+          parScope.onResetClicked()
+          // TODO Perform query here
+          console.log(queryString)
+          parScope.getData2(cookies.methods.getCookie('token'), queryString, parScope, onSucc)
+        } else {
+          parScope.invalidCoords = true
+        }
       },
       getData2 (token, queryString, parScope) {
         fetch(parScope.$api + /* '/complaints/' */ queryString, {
@@ -301,11 +350,35 @@
         if (category === 'Street Noise') {
           category = 'Street%20Noise'
         }
+        if (category === 'Private Celebration') {
+          category = 'Private%20Celebration'
+        }
         if (sub_category === 'Loud Music/Party') {
           sub_category = 'Loud%20Music/Party'
         }
-        var queryString = "/complaints/?category=" + category + "&sub_category=" + sub_category +
-          "&timestamp_0=" + startDatetime + "&timestamp_1=" + endDatetime +
+        if (sub_category === 'Loud Talking/Shouting') {
+          sub_category = 'Loud%20Talking/Shouting'
+        }
+        var catString = "category=" + category
+        var sub_catString = "&sub_category=" + sub_category
+        if (category === '') {
+          catString = ''
+        }
+        if (sub_category === '') {
+          sub_catString = ''
+        }
+        var startDateString = "&timestamp_0=" + startDatetime
+        var endDateString = "&timestamp_1=" + endDatetime
+        if (startDatetime === '') {
+          startDateString = ''
+          endDateString = ''
+        }
+        if (endDatetime === '') {
+          startDateString = ''
+          endDateString = ''
+        }
+        var queryString = "/complaints/?" + catString + sub_catString +
+          startDateString + endDateString +
           "&latitude_0=" + lat_low + "&latitude_1=" + lat_high + "&longitude_0=" + long_low + "&longitude_1=" + long_high
         return queryString
       },
@@ -448,10 +521,22 @@
       if (this.tokenExists) {
         this.myCredentials.username = cookies.methods.getCookie('username')
         this.myCredentials.token = cookies.methods.getCookie('token')
+      } else {
+        var onSucc = function (token, parScope) {
+          parScope.myCredentials.token = JSON.parse(token)
+        }
+        var onFail = function (token, parScope) {
+          alert('Error: Could not validate user')
+        }
+        dbInteract.methods.postToGetToken(this.$api, this.myCredentials, onSucc, onFail, this, false)
       }
+
     }
   }
 </script>
 
 <style scoped>
+  .errorMsg {
+    color: red;
+  }
 </style>

@@ -142,6 +142,7 @@ export const dbInteract = {
         return response
       }
 
+      console.log(credentials)
       var credentialsForm = this.compileCredentials(credentials)
       fetch(apiLoc + '/get-token/', {
         mode: 'cors',
@@ -160,8 +161,8 @@ export const dbInteract = {
             document.cookie = 'username=' + credentials.username + '; expires=' + expireDateString + '; domain=' + location.hostname + '; path=/'
             document.cookie = 'token=' + response + '; expires=' + expireDateString + '; domain=' + location.hostname + '; path=/'
           } else {
-            // document.cookie = 'username=' + credentials.username + '; domain=' + location.hostname + '; path=/'
-            // document.cookie = 'token=' + response + '; domain=' + location.hostname + '; path=/'
+            document.cookie = 'username=' + credentials.username + '; domain=' + location.hostname + '; path=/'
+            document.cookie = 'token=' + response + '; domain=' + location.hostname + '; path=/'
           }
           if (typeof onSucc === 'function') {
             onSucc(response, parentScope)
