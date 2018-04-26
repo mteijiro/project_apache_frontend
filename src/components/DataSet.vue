@@ -524,6 +524,7 @@
       } else {
         var onSucc = function (token, parScope) {
           parScope.myCredentials.token = JSON.parse(token)
+          parScope.tokenExists = true
         }
         var onFail = function (token, parScope) {
           alert('Error: Could not validate user')
