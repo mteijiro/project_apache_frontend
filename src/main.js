@@ -20,10 +20,10 @@ Vue.config.productionTip = false
 
 // If the location of the database API changes you can configure the new location here.
 var config = {
-  serverApi: 'http://62.116.200.60:8000',
+  serverApi: 'http://18.184.91.193:8000',
   localApi: 'http://localhost:8000'
 }
-Vue.prototype.$api = config.localApi
+Vue.prototype.$api = config.serverApi
 
 /* eslint-disable no-new */
 new Vue({
