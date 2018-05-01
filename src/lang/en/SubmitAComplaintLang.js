@@ -1,5 +1,5 @@
 module.exports = {
-  submit_a_complaint: 'Submit A Complaint',
+  submit_a_complaint: 'Submit A Report',
   logged_in_warn: 'You must be logged in to submit a complaint',
   logged_in_warn2: 'You must be logged in',
   log_in_here: 'You can log in here',

@@ -1,5 +1,5 @@
 module.exports = {
-  submit_a_complaint: 'Indsend en klage',
+  submit_a_complaint: 'Indsend en rapport',
   logged_in_warn: 'Du skal være logget ind for at indsende en klage',
   logged_in_warn2: 'Du skal være logget ind',
   log_in_here: 'Du kan logge ind her',

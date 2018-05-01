@@ -44,7 +44,7 @@ import { cookies } from '../src/mixins/cookies'
         token: ''
       },
       accountTabLabel: parent.$lang.ToolbarLang.my_account,
-      curLanguage: 'en',
+      curLanguage: 'dk',
       toolbarNames: {
         menu: parent.$lang.ToolbarLang.menu,
         submit_a_complaint: parent.$lang.ToolbarLang.submit_a_complaint,
@@ -102,9 +102,9 @@ import { cookies } from '../src/mixins/cookies'
         this.$lang.setLang(cookies.methods.getCookie('language'))
         this.curLanguage = cookies.methods.getCookie('language')
       } else {
-        this.$lang.setLang('en')
-        this.curLanguage = 'en'
-        cookies.methods.createCookieLang('en')
+        this.$lang.setLang('dk')
+        this.curLanguage = 'dk'
+        cookies.methods.createCookieLang('dk')
       }
       this.refreshToolbarHeaders()
     },

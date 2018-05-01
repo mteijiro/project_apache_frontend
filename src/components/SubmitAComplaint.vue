@@ -380,7 +380,7 @@ export default {
         parScope.myCredentials.token = JSON.parse(token)
       }
       var onFail = function (token, parScope) {
-        alert('Error: Could not validate user')
+        console.log('Error: Could not validate user')
       }
       dbInteract.methods.postToGetToken(this.$api, this.myCredentials, onSucc, onFail, this, false)
     }

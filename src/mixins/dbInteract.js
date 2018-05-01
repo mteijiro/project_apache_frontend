@@ -124,7 +124,7 @@ export const dbInteract = {
       }
 
       var ifFail = function (response, parentScope) {
-        alert('error: Complaint wasn\'t submitted: ' + response)
+        console.log('error: Complaint wasn\'t submitted: ' + response)
         console.log(response)
       }
 
@@ -142,7 +142,7 @@ export const dbInteract = {
         return response
       }
 
-      console.log(credentials)
+      // console.log(credentials)
       var credentialsForm = this.compileCredentials(credentials)
       fetch(apiLoc + '/get-token/', {
         mode: 'cors',

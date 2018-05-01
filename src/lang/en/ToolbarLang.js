@@ -3,7 +3,7 @@ module.exports = {
   language: 'Language: ',
   logged_in: 'Logged In: ',
   menu: 'Menu',
-  submit_a_complaint: 'Submit A Complaint',
+  submit_a_complaint: 'Submit A Report',
   register: 'Register',
   about: 'About',
   log_in: 'Log In',
