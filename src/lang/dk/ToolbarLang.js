@@ -3,7 +3,7 @@ module.exports = {
   language: 'Sprog: ', // Google translated
   logged_in: 'Logget Ind: ', // Google translated
   menu: 'hovedmenu', // Google translated
-  submit_a_complaint: 'Indsend en Eapport',
+  submit_a_complaint: 'Indsend en Rapport',
   register: 'Tilmeld',
   about: 'Om',
   log_in: 'Log In',
